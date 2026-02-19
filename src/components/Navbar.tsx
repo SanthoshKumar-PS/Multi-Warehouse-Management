@@ -58,6 +58,9 @@ const Navbar = () => {
                             </div>
                         </button>
                     ))}
+                    {otherWarehouses?.length===0 && (
+                        <p className="px-2 text-xs font-medium">Access restricted to your assigned warehouse.</p>
+                    )}
                 </PopoverContent>
             </Popover>
         </div>
