@@ -32,7 +32,7 @@ const Login = () => {
       setToken(token);
       const defaultWarehouse = user.warehouses[0];
       setSelectedWarehouse(defaultWarehouse);
-      toast.success('Happy we submitted.')
+      toast.success('Login success.')
       console.log("Response auth: ",response.data)
       navigate('/dashboard')
     } catch (error:any) {
