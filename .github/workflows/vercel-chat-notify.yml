@@ -1,0 +1,16 @@
+name: Google Chat Notification on Vercel Deploy
+
+on:
+  deployment_status
+
+jobs:
+  notify:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Google Chat (Emoji Link, No Preview)
+        run: |
+          curl -X POST "${{ secrets.GCHAT_WEBHOOK }}" \
+          -H "Content-Type: application/json" \
+          -d '{"text": "[✅ Deploy Successful](vercel.com/deployments/${{ github.event.deployment_status.id }}) | 📁 `${{ github.repository }}` | 👤 `vercel[bot]`"}'
+
