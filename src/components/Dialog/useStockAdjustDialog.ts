@@ -3,6 +3,7 @@ import type { WarehouseInventory } from "@/types/TableTypes";
 import { useState } from "react"
 import { handleApiError } from "../handleApiError";
 import type { StockTransactionInput } from "./StockAdjustDialog";
+import { toast } from "sonner";
 
 export const useStockAdjustDialog = () => {
     const [open, setOpen] = useState<boolean>(false);
@@ -30,16 +31,12 @@ export const useStockAdjustDialog = () => {
     const submitStockTransaction = async (data:StockTransactionInput) => {
         try {
             setIsLoading(true);
-            setTimeout(()=>{
-                console.log("Data recieved to send API call: ",data)
-
-            },2000)
-            await api.post('/stock/transaction', data);
-            return true
+            console.log("Data recieved to send API call: ",data)
+            const response = await api.post('/stock/transaction', data);
+            console.log("submitStockTransaction response: ", response.data);
+            toast.success('Updated stock successfully.')
         } catch (error:any) {
             handleApiError(error);
-            setIsLoading(false);
-            return false          
         } finally{
             setIsLoading(false);
         }
