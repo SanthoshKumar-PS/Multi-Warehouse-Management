@@ -27,7 +27,7 @@ api.interceptors.request.use(config => {
         ...config.params,
         selectedWarehouseId
     }
-    console.log(`API token-${token} selectedWarehouseId - ${selectedWarehouseId}`)
+    // console.log(`API token-${token} selectedWarehouseId - ${selectedWarehouseId}`)
 
     return config
 

@@ -35,6 +35,7 @@ export const useStockAdjustDialog = () => {
             const response = await api.post('/stock/transaction', data);
             console.log("submitStockTransaction response: ", response.data);
             toast.success('Updated stock successfully.')
+            setInventoryProduct(response.data.response)
         } catch (error:any) {
             handleApiError(error);
         } finally{

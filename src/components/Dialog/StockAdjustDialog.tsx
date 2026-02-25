@@ -67,7 +67,7 @@ const handleProcess = () => {
     toast.error(result.error);
     return;
   }
-  toast.success('Validation success')
+  console.log('Inventory Transaction Validation success')
 
   onSubmit({
     productMn: inventoryProduct.productMn,
@@ -161,11 +161,11 @@ const handleProcess = () => {
               />
             </div>
 
-            <div className="bg-slate-50 p-3 rounded text-xs grid grid-cols-2 gap-2 border">
+            <div className="bg-slate-50 p-3 rounded text-sm grid grid-cols-2 gap-2 border">
               <div>Physical: <b>{physical}</b></div>
               <div>Reserved: <b>{reserved}</b></div>
               <div className="col-span-2 text-blue-600 border-t pt-1">
-                ATP: <b>{atp}</b>
+                Available To Promise: <b>{atp}</b>
               </div>
             </div>
           </div>

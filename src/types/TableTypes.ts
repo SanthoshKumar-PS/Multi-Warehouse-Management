@@ -73,6 +73,7 @@ export interface Product {
   brand: string;
   mn: string;
   type?: string | null;
+  family?: string | null;
   power?: number | null;
   description: string;
   active: boolean;
@@ -103,6 +104,7 @@ export interface WarehouseInventory {
   productMn: string;
   physicalQty: number;
   reservedQty: number;
+  minimumQty: number;
   product?: Product;
   warehouse?: Warehouse;
 }
@@ -116,6 +118,10 @@ export interface InventoryTransaction {
   reference?: string | null;
   createdAt: string | Date;
   createdBy?: string | null;
+  physicalBefore: number;
+  physicalAfter: number;
+  reservedBefore: number;
+  reservedAfter: number;
 }
 
 export interface OrderDetails {
