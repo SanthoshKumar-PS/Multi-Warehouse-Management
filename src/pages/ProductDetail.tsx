@@ -14,16 +14,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import StockAdjustDialog from "@/components/Dialog/StockAdjustDialog";
 import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
-const typeBadge: Record<InventoryTxnType, string> = {
-  INWARD: "bg-green-100 text-green-700 border-green-300",
-  OUTWARD: "bg-red-100 text-red-700 border-red-300",
-  RESERVE: "bg-yellow-100 text-yellow-700 border-yellow-300",
-  RELEASE: "bg-blue-100 text-blue-700 border-blue-300",
-  TRANSFER_IN: "bg-purple-100 text-purple-700 border-purple-300",
-  TRANSFER_OUT: "bg-orange-100 text-orange-700 border-orange-300",
-  ADJUSTMENT: "bg-gray-100 text-gray-700 border-gray-300",
-};
-
+import { transactionTypeBadge } from "@/utils/typeBadge";
 
 const ProductDetail = () => {
   const { selectedWarehouse, user, hasWarehouseAccess } = useAuth();
@@ -180,7 +171,7 @@ const ProductDetail = () => {
               {inventoryTransactions.map(tx => (
                 <TableRow key={tx.id} className="[&_td]:py-4">
                   <TableCell className="whitespace-nowrap text-sm">{format(new Date(tx.createdAt), 'dd MMM yyyy')}</TableCell>
-                  <TableCell><Badge variant='outline' className={typeBadge[tx.type]}>{tx.type}</Badge></TableCell>
+                  <TableCell><Badge variant='outline' className={transactionTypeBadge[tx.type]}>{tx.type}</Badge></TableCell>
                   <TableCell className={`font-mono ${tx.qtyChange<0 ? 'text-red-500' : 'text-green-500'}`}>
                     {tx.qtyChange>0 ? '+' : '-'}{Math.abs(tx.qtyChange)}
                   </TableCell>
