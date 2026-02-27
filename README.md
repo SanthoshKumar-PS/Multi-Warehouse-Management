@@ -1,73 +1,168 @@
-# React + TypeScript + Vite
+# Multi-Warehouse Management System (Startup README)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Overview
 
-Currently, two official plugins are available:
+**Multi-Warehouse Management** is a scalable system designed to manage inventory across multiple warehouse locations with secure access control.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The system is built with a strong focus on:
 
-## React Compiler
+* Multi-location inventory tracking
+* Role-Based Access Control (RBAC)
+* Fine-grained permission management
+* Real-time stock visibility
+* Secure operational workflows
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This README is an **initial startup version** and will be expanded as the project evolves.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🎯 Core Objectives
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* Manage inventory across multiple warehouses
+* Track stock movements (IN, OUT, TRANSFER, RESERVE, ADJUSTMENT)
+* Control user access using RBAC
+* Maintain clear audit trails
+* Support scalable enterprise workflows
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏗️ Key Features
+
+### ✅ Multi-Warehouse Support
+
+* Multiple warehouse locations
+* Warehouse-wise stock visibility
+* Inter-warehouse transfers
+* Physical vs Reserved stock tracking
+
+---
+
+### ✅ Role-Based Access Control (RBAC)
+
+The system implements a structured RBAC model consisting of:
+
+#### 1️⃣ Roles
+
+Roles define **user responsibilities**.
+
+Examples:
+
+* Admin
+* Warehouse Manager
+* Sales User
+* Finance User
+* Viewer
+
+---
+
+#### 2️⃣ Permissions
+
+Permissions define **what actions are allowed**.
+
+Examples:
+
+* View Inventory
+* Create Stock Entry
+* Transfer Stock
+* Adjust Inventory
+* Manage Users
+
+---
+
+#### 3️⃣ Role-Permission Mapping
+
+A junction structure is used to connect roles and permissions.
+
+```
+Role → RolePermission → Permission
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This allows:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+* One role → Many permissions
+* One permission → Assigned to multiple roles
+* Flexible access control
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🔐 RBAC Structure (Conceptual)
+
 ```
+User
+ └── Role
+       └── RolePermission
+              └── Permission
+```
+
+This architecture ensures:
+
+* Centralized access control
+* Easy permission updates
+* Secure system operations
+* Scalable role management
+
+---
+
+## 📦 Inventory Concepts
+
+The system tracks two primary stock types:
+
+### Physical Stock
+
+Actual available inventory in warehouse.
+
+### Reserved Stock
+
+Inventory allocated for orders but not yet dispatched.
+
+---
+
+## 🔄 Inventory Transactions
+
+Supported transaction types include:
+
+* INWARD
+* OUTWARD
+* TRANSFER IN
+* TRANSFER OUT
+* RESERVE
+* RELEASE
+* ADJUSTMENT
+
+---
+
+## 🛠️ Future Enhancements (Planned)
+
+This is a startup README. Upcoming updates will include:
+
+* System architecture details
+* Database schema documentation
+* API documentation
+* Deployment instructions
+* User workflows
+* Audit & logging system
+* Performance optimization strategy
+
+---
+
+## 🚀 Project Status
+
+**Current Stage:** Initial Setup / Core Architecture
+**Next Milestone:** Inventory workflows & permission enforcement
+
+---
+
+## 📖 Contribution Notes
+
+This document will evolve alongside system development.
+Please update this README when adding major features or architectural changes.
+
+---
+
+## 📬 Contact / Maintainers
+
+Project maintainers will be added in future updates.
+
+---
+
+**Version:** 0.1 (Startup Documentation)
