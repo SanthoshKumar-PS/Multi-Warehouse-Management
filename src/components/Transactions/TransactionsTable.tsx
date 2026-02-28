@@ -12,6 +12,7 @@ const TransactionsTable = ({inventoryTransactions = []}:TransactionsTableType) =
     <Table>
       <TableHeader>
         <TableRow className="[&_th]:py-4">
+          <TableHead>Product MN</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Type</TableHead>
           <TableHead className="">Qty Change</TableHead>
@@ -24,6 +25,7 @@ const TransactionsTable = ({inventoryTransactions = []}:TransactionsTableType) =
       <TableBody>
         {inventoryTransactions.map((tx) => (
           <TableRow key={tx.id} className="[&_td]:py-4">
+            <TableCell className="text-sm truncate max-w-40">{tx.productMn}</TableCell>
             <TableCell className="whitespace-nowrap text-sm">
               {format(new Date(tx.createdAt), "dd MMM yyyy")}
             </TableCell>
