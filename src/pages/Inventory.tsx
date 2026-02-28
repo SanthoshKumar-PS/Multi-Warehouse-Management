@@ -14,7 +14,7 @@ import { Spinner } from "@/components/Spinner";
 import { handleApiError } from "@/components/handleApiError";
 import { extractInventoryFilters } from "@/utils/extractInventoryFilters";
 import { Input } from "@/components/ui/input";
-import StockAdjustDialog from "@/components/Dialog/StockAdjustDialog";
+import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog";
 import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
 
 
@@ -25,6 +25,16 @@ const Inventory = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const navigate = useNavigate();
+
+  const handleSubmitStockTransaction = async (data: StockTransactionInput) => {
+    const updated = await submitStockTransaction(data);
+    if(!updated) return
+    console.log("Optimistic update for physicalQty and reservedQty only: ", updated)
+    setInventoryProducts(prev => prev.map(ip =>(
+      ip.productMn===updated.productMn && ip.warehouseId===updated.warehouseId 
+        ? {...ip, physicalQty:updated.physicalQty, reservedQty:updated.reservedQty} : ip
+    )))
+  }
 
   // TODO: Handle Missing Warehouse
   if(!selectedWarehouse) return 
@@ -220,7 +230,7 @@ const filteredInventoryProducts = useMemo(() => {
         inventoryProduct={dialogInventoryProduct} 
         loading={dialogLoading} 
         onClose={closeDialog} 
-        onSubmit={submitStockTransaction}
+        onSubmit={handleSubmitStockTransaction}
       />
 
     </motion.div>
