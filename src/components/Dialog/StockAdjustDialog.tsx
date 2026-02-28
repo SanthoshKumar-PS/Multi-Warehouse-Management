@@ -40,8 +40,8 @@ const StockAdjustDialog = ({ open, inventoryProduct, loading, onClose, onSubmit 
   useEffect(() => {
   if (open) {
     setType("ADJUSTMENT");
-    setQty(0);
-    setReference("");
+    setQty(5);//TODO:Set it to 0 at any cost
+    setReference("Testing");//TODO:Remove this at any cost
     setAdjSign(1);
   }
 }, [open]);

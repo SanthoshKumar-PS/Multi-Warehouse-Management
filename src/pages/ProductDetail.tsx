@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import StockAdjustDialog from "@/components/Dialog/StockAdjustDialog";
+import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog";
 import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
 import { transactionTypeBadge } from "@/utils/typeBadge";
 
@@ -22,6 +22,22 @@ const ProductDetail = () => {
   const [inventoryTransactions, setInventoryTransactions] = useState<InventoryTransaction[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { open, inventoryProduct: dialogInventoryProduct, isLoading: dialogLoading, openDialog, closeDialog, submitStockTransaction } = useStockAdjustDialog();
+
+  const handleSubmitStockTransaction = async (data: StockTransactionInput) => {
+    const result = await submitStockTransaction(data);
+    if(!result) return
+    const { updatedInventoryProduct: updated, createdTransaction } = result;
+    console.log("Optimistic update for physicalQty and reservedQty only: ", result)
+    setInventoryProduct(prev=>{
+      if(!prev) return prev;
+      return {
+        ...prev,
+        physicalQty:updated.physicalQty,
+        reservedQty:updated.reservedQty
+      }
+    })
+    setInventoryTransactions(prev => [createdTransaction , ...prev])
+  }
   
 
   const { productMn } = useParams();
@@ -216,7 +232,7 @@ const ProductDetail = () => {
         inventoryProduct={dialogInventoryProduct} 
         loading={dialogLoading} 
         onClose={closeDialog} 
-        onSubmit={submitStockTransaction}
+        onSubmit={handleSubmitStockTransaction}
       />
 
 

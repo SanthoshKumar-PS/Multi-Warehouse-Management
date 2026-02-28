@@ -27,8 +27,9 @@ const Inventory = () => {
   const navigate = useNavigate();
 
   const handleSubmitStockTransaction = async (data: StockTransactionInput) => {
-    const updated = await submitStockTransaction(data);
-    if(!updated) return
+    const result = await submitStockTransaction(data);
+    if(!result) return
+    const { updatedInventoryProduct: updated, createdTransaction } = result;
     console.log("Optimistic update for physicalQty and reservedQty only: ", updated)
     setInventoryProducts(prev => prev.map(ip =>(
       ip.productMn===updated.productMn && ip.warehouseId===updated.warehouseId 

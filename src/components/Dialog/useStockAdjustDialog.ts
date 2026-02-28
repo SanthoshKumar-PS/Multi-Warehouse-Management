@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { WarehouseInventory } from "@/types/TableTypes";
+import type { InventoryTransaction, WarehouseInventory } from "@/types/TableTypes";
 import { useState } from "react"
 import { handleApiError } from "../handleApiError";
 import type { StockTransactionInput } from "./StockAdjustDialog";
@@ -36,7 +36,10 @@ export const useStockAdjustDialog = () => {
             console.log("submitStockTransaction response: ", response.data);
             toast.success('Updated stock successfully.')
             setInventoryProduct(response.data.updatedInventoryProduct)
-            return response.data.updatedInventoryProduct as WarehouseInventory
+            return { 
+                updatedInventoryProduct: response.data.updatedInventoryProduct as WarehouseInventory,
+                createdTransaction: response.data.createdTransaction as InventoryTransaction
+            }
         } catch (error:any) {
             handleApiError(error);
             return null
