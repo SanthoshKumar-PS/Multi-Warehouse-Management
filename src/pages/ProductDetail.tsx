@@ -7,7 +7,7 @@ import type { InventoryTransaction, InventoryTxnType, WarehouseInventory } from 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowLeftRight, Box, Package } from "lucide-react";
+import { ArrowLeft, ArrowLeftRight, Box, Layers, Package, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { format } from "date-fns";
@@ -136,7 +136,7 @@ const ProductDetail = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Reserved</CardTitle>
-            <Box className="h-4 w-4 text-gray-500"/>
+            <ShieldAlert className="h-4 w-4 text-gray-500"/>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{inventoryProduct.reservedQty}</p>
@@ -145,7 +145,7 @@ const ProductDetail = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Available</CardTitle>
-            <Box className="h-4 w-4 text-gray-500"/>
+            <Layers className="h-4 w-4 text-gray-500"/>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{inventoryProduct.physicalQty - inventoryProduct.reservedQty}</p>
@@ -154,7 +154,7 @@ const ProductDetail = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Transactions</CardTitle>
-            <Box className="h-4 w-4 text-gray-500"/>
+            <ArrowLeftRight className="h-4 w-4 text-gray-500"/>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{inventoryTransactions.length}</p>

@@ -7,8 +7,20 @@ export type PaymentType = "SCREENSHOT" | "ADJUSTMENT" | "FINANCE"
 
 export type WarehouseAccessType = "VIEW" | "MANAGE"
 
-export type InventoryTxnType = "INWARD" | "OUTWARD" | "RESERVE" | "RELEASE" | "TRANSFER_IN" | "TRANSFER_OUT" | "ADJUSTMENT"
 
+export const INVENTORY_TXN_TYPES = [
+  { type: "INWARD", label: "Inward" },
+  { type: "OUTWARD", label: "Outward" },
+  { type: "RESERVE", label: "Reserve" },
+  { type: "RELEASE", label: "Release" },
+  { type: "TRANSFER_IN", label: "Transfer In" },
+  { type: "TRANSFER_OUT", label: "Transfer Out" },
+  { type: "ADJUSTMENT", label: "Adjustment" },
+] as const;
+
+export type InventoryTxnType = typeof INVENTORY_TXN_TYPES[number]['type']
+
+// export type InventoryTxnType = "INWARD" | "OUTWARD" | "RESERVE" | "RELEASE" | "TRANSFER_IN" | "TRANSFER_OUT" | "ADJUSTMENT"
 
 export interface Company {
   id: number;
