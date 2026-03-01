@@ -61,9 +61,9 @@ const Transactions = () => {
       initial={{ opacity:0, y:10 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.25 }}
-      className="space-y-4 md:space-y-6 "
+      className="space-y-4 md:space-y-6"
     >
-      <h1 className="text-2xl font-bold text-gray-800">Warehouse Inventory</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Transactions</h1>
 
       <div className="flex flex-wrap items-end gap-3">
         <div className="grid gap-1.5">
@@ -89,7 +89,7 @@ const Transactions = () => {
             <SelectTrigger className="w-36" aria-label="Filter by transaction type">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent side="bottom">
               <SelectItem value="ALL">All Types</SelectItem>
               {INVENTORY_TXN_TYPES.map( TXN =>(
                 <SelectItem value={TXN.type} key={TXN.type}>{TXN.label}</SelectItem>
@@ -134,9 +134,7 @@ const Transactions = () => {
           <p className="font-medium">Try changing the filters applied.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border bg-card">
-          <TransactionsTable inventoryTransactions={inventoryTransactions}/>
-        </div>
+        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true}/>
       )}
 
 

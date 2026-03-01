@@ -16,6 +16,8 @@ import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dial
 import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
 import { transactionTypeBadge } from "@/utils/typeBadge";
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
+import Pagination from "@/components/Pagination/Pagination";
+import { usePagination } from "@/components/Pagination/usePagination";
 
 const ProductDetail = () => {
   const { selectedWarehouse, user, hasWarehouseAccess } = useAuth();
@@ -23,6 +25,7 @@ const ProductDetail = () => {
   const [inventoryTransactions, setInventoryTransactions] = useState<InventoryTransaction[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { open, inventoryProduct: dialogInventoryProduct, isLoading: dialogLoading, openDialog, closeDialog, submitStockTransaction } = useStockAdjustDialog();
+  const { page, setPage, totalPages, setTotalPages, limit, setLimit } = usePagination();
 
   const handleSubmitStockTransaction = async (data: StockTransactionInput) => {
     const result = await submitStockTransaction(data);
@@ -52,11 +55,16 @@ const ProductDetail = () => {
     try {
       setIsLoading(true);
       const response = await api.get('/stock/inventoryProduct', {
-        params:{ productMn:productMn }
+        params:{ 
+          productMn:productMn,
+          page,
+          limit
+        }
       })
       console.log("fetchInventoryProduct response: ", response.data);
       setInventoryProduct(response.data.inventoryProduct);
-      setInventoryTransactions(response.data.inventoryTransactions)
+      setInventoryTransactions(response.data.inventoryTransactions);
+      setTotalPages(response.data.totalPages);
       
     } catch(error:any){
       console.log("Error occured in fetchInventoryProducts: ", error);
@@ -68,7 +76,7 @@ const ProductDetail = () => {
 
   useEffect(()=>{
     fetchInventoryProduct();
-  },[selectedWarehouse])
+  },[selectedWarehouse, page, limit])
 
   if(isLoading){
     return (
@@ -98,10 +106,11 @@ const ProductDetail = () => {
       initial={{ opacity:0, y:10 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.25 }}
+      className="space-y-4"
     >
       {/* Header */}
       {/* TODO: Adjust Stock */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button variant='ghost' size='icon' onClick={()=>navigate('/inventory')} aria-label="Back to inventory">
             <ArrowLeft className="h-5 w-5"/>
@@ -123,7 +132,7 @@ const ProductDetail = () => {
       </div>
 
       {/* Stat Card */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Physical Stock</CardTitle>
@@ -164,17 +173,24 @@ const ProductDetail = () => {
       </div>
 
       {/* Transaction History */}
-      <h2 className="mb-3 text-lg font-semibold text-gray-500">Transaction History</h2>
+      <h2 className="text-lg font-semibold text-gray-500">Transaction History</h2>
       {inventoryTransactions.length ===0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12 text-gray-500">
           <ArrowLeftRight className="mb-3 h-10 w-10"/>
           <p className="font-medium">No transactions yet.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border bg-card">
-          <TransactionsTable inventoryTransactions={inventoryTransactions}/>
-        </div>
+        <TransactionsTable inventoryTransactions={inventoryTransactions}/>
       )}
+
+      <Pagination
+        page={page} 
+        setPage={setPage} 
+        totalPages={totalPages} 
+        limit={limit}
+        setLimit={setLimit} 
+        totalRows={inventoryTransactions.length}
+      />
 
       <StockAdjustDialog 
         open={open} 

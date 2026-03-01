@@ -3,7 +3,7 @@ import type { InventoryTransaction, WarehouseInventory } from "@/types/TableType
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { PackageOpen, Search } from "lucide-react";
+import { PackageOpen, RefreshCw, Search } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -62,6 +62,10 @@ const Inventory = () => {
     fetchInventoryProducts();
   },[selectedWarehouse])
 
+  const refreshData = () => {
+    fetchInventoryProducts()
+  }
+
   const filters = useMemo(()=>{
     console.log("Inventory Products Filters: ",extractInventoryFilters(inventoryProducts))
     return extractInventoryFilters(inventoryProducts)
@@ -103,21 +107,28 @@ const filteredInventoryProducts = useMemo(() => {
 
   
 
-  if(isLoading){
-    return (
-      <div className="flex-1 flex justify-center items-center">
-        <Spinner />
-      </div>
-    )
-  }
-
   return (
     <motion.div 
       initial={{ opacity:0, y:10 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.25 }}
     >
-      <h1 className="mb-6 text-2xl font-bold text-gray-800">Warehouse Inventory</h1>
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">Warehouse Inventory</h1>
+        <Button onClick={fetchInventoryProducts} variant='outline'>
+          Refresh
+          <motion.div
+          animate={{ rotate: isLoading ? 360 : 0 }}
+          transition={{
+            duration: 1,
+            repeat: isLoading ? Infinity : 0,
+            ease: "linear",
+          }}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </motion.div>
+        </Button>
+      </div>
 
       <div className="mb-6 flex flex-wrap items-end gap-3">
         {/* Search */}
@@ -172,7 +183,11 @@ const filteredInventoryProducts = useMemo(() => {
 
       </div>
 
-      {filteredInventoryProducts.length===0 ? (
+      {isLoading? (
+        <div className="flex-1 flex justify-center items-center py-30 md:py-40">
+          <Spinner />
+        </div>
+      ) : filteredInventoryProducts.length===0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-gray-500">
           <PackageOpen className="mb-4 h-12 w-12"/>
           <p className="text-lg font-medium">No Data Found.</p>

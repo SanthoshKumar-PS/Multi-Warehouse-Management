@@ -94,6 +94,7 @@ export interface Product {
   unit_price?: string | null;
   inventory?: WarehouseInventory[];
   productPrice?: ProductPrice;
+  transactions:  InventoryTransaction[]
 }
 
 export interface ProductPrice {
@@ -134,6 +135,7 @@ export interface InventoryTransaction {
   physicalAfter: number;
   reservedBefore: number;
   reservedAfter: number;
+  product?:Product;
 }
 
 export interface OrderDetails {
