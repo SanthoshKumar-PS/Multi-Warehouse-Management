@@ -8,6 +8,8 @@ import Transactions from "./pages/Transactions";
 import LowStock from "./pages/LowStock";
 import NotFound from "./pages/NotFound";
 import AuthProvider from "./context/AuthProvider";
+import Transfers from "./pages/Transfers";
+import NewTransfer from "./pages/NewTransfer";
 
 const App = () => {
   return (
@@ -21,6 +23,8 @@ const App = () => {
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/inventory/:productMn" element={<ProductDetail />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/transfers" element={<Transfers />} />
+            <Route path="/transfers/new" element={<NewTransfer />} />
             <Route path="/low-stock" element={<LowStock />} />
           </Route>
           <Route path="*" element={<NotFound />} />

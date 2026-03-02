@@ -1,9 +1,9 @@
 import { api } from "@/lib/api";
 import type { InventoryTransaction, WarehouseInventory } from "@/types/TableTypes";
 import { useState } from "react"
-import { handleApiError } from "../handleApiError";
 import type { StockTransactionInput } from "./StockAdjustDialog";
 import { toast } from "sonner";
+import { handleApiError } from "@/components/handleApiError";
 
 export const useStockAdjustDialog = () => {
     const [open, setOpen] = useState<boolean>(false);

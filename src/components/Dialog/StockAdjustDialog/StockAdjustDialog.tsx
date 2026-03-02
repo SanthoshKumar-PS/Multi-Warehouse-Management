@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { InventoryTxnType, WarehouseInventory } from "@/types/TableTypes";
 import { api } from "@/lib/api";
 import { validateInventoryTransaction } from "@/utils/validateInventoryTxn";
-import { handleApiError } from "../handleApiError";
+import { handleApiError } from "../../handleApiError";
 
 export type StockTransactionInput = {
     productMn: string;
