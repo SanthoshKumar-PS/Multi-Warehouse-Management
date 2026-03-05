@@ -14,8 +14,8 @@ import { Spinner } from "@/components/Spinner";
 import { handleApiError } from "@/components/handleApiError";
 import { extractInventoryFilters } from "@/utils/extractInventoryFilters";
 import { Input } from "@/components/ui/input";
-import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog";
-import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
+import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog/StockAdjustDialog";
+import { useStockAdjustDialog } from "@/components/Dialog/StockAdjustDialog/useStockAdjustDialog";
 
 
 const Inventory = () => {

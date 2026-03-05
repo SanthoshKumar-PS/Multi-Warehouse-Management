@@ -12,8 +12,8 @@ const navLinks = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/inventory", label: "Inventory", icon: Package },
   { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { to: "/low-stock", label: "Low Stock", icon: AlertTriangle },
   { to: "/transfers", label: "Transfers", icon: Truck },
+  { to: "/low-stock", label: "Low Stock", icon: AlertTriangle },
 ];
 const Navbar = () => {
     const {user, selectedWarehouse, setSelectedWarehouse, logout} = useAuth()

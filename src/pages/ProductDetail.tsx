@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog";
-import { useStockAdjustDialog } from "@/components/Dialog/useStockAdjustDialog";
+import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog/StockAdjustDialog";
+import { useStockAdjustDialog } from "@/components/Dialog/StockAdjustDialog/useStockAdjustDialog";
 import { transactionTypeBadge } from "@/utils/typeBadge";
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
 import Pagination from "@/components/Pagination/Pagination";
