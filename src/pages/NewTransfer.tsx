@@ -13,20 +13,23 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getWarehouseEmoji } from '@/utils/getWarehouseEmoji';
 import { toast } from 'sonner';
+import { handleApiError } from '@/components/handleApiError';
+import { api } from '@/lib/api';
 
 
 const NewTransfer = () => {
     const { user, selectedWarehouse } = useAuth();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     if(!selectedWarehouse) return //TODO:handle selectedWarehouse === null
     const navigate = useNavigate();
     const otherWarehouses = user?.warehouses.filter(w => w.warehouseId !==selectedWarehouse.warehouseId)
     const { selectedProducts, addProduct, removeProduct, onQuantityChange } = useTransferOrder();
-    const { open, openDialog, closeDialog, isLoading, inventoryProducts, fetchInventoryProducts } = useProductSelectionDialog();
+    const { open, openDialog, closeDialog, isLoading: productsLoading, inventoryProducts, fetchInventoryProducts } = useProductSelectionDialog();
 
     const [toWarehouse, setToWarehouse] = useState<WarehouseAccess | null>(null);
     const [reference, setReference] = useState<string>('');
 
-    const handleTransferSubmit = () => {
+    const handleTransferSubmit = async () => {
         if(!selectedWarehouse || !toWarehouse) {
             toast.error('Select source and destination warehouse to transfer.');
             return;
@@ -42,6 +45,17 @@ const NewTransfer = () => {
             toWarehouse: toWarehouse
         }
         console.log("Payload to be sent to the backend: ",payload);
+        try{
+            setIsLoading(true);
+            const response = await api.post('/transfers/new',payload);
+            console.log("Response recieved: ",response.data);
+
+        } catch(error:any){
+            console.log("Error occured in handleTransferSubmit: ",error);
+            handleApiError(error);
+        } finally{
+            setIsLoading(false);
+        }
     }
 
   return (
@@ -158,7 +172,7 @@ const NewTransfer = () => {
         <ProductSelectionDialog
             open = {open}
             onClose={closeDialog}
-            isLoading= {isLoading}
+            isLoading= {productsLoading}
             inventoryProducts= {inventoryProducts}
             onProductClick={(product: WarehouseInventory)=>{
                 console.log("Product selected: ",product);
