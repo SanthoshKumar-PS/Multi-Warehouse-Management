@@ -41,7 +41,7 @@ const Inventory = () => {
   if(!selectedWarehouse) return 
   const canManage = hasWarehouseAccess(selectedWarehouse.warehouseId, 'MANAGE')
   console.log("Can Manage warehouse: ",canManage)
-
+  
   const fetchInventoryProducts = async () =>{
     try{
       setIsLoading(true);

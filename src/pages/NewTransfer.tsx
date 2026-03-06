@@ -18,14 +18,17 @@ import { api } from '@/lib/api';
 
 
 const NewTransfer = () => {
-    const { user, selectedWarehouse } = useAuth();
+    const { user, selectedWarehouse, hasWarehouseAccess } = useAuth();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     if(!selectedWarehouse) return //TODO:handle selectedWarehouse === null
     const navigate = useNavigate();
     const otherWarehouses = user?.warehouses.filter(w => w.warehouseId !==selectedWarehouse.warehouseId)
     const { selectedProducts, addProduct, removeProduct, onQuantityChange } = useTransferOrder();
     const { open, openDialog, closeDialog, isLoading: productsLoading, inventoryProducts, fetchInventoryProducts } = useProductSelectionDialog();
-
+    // TODO: Handle Missing Warehouse
+    if(!selectedWarehouse) return 
+    const canManage = hasWarehouseAccess(selectedWarehouse.warehouseId, 'MANAGE');
+    console.log("Can Manage warehouse: ",canManage)
     const [toWarehouse, setToWarehouse] = useState<WarehouseAccess | null>(null);
     const [reference, setReference] = useState<string>('');
 
