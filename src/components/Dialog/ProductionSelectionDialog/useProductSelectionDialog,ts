@@ -1,7 +1,0 @@
-import { useState } from "react"
-import { WarehouseInventory } from '../../../types/TableTypes'
-export const useProductSelectionDialog = () => {
-    const [open, setOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [inventoryProducts, setInventoryProducts] = useState<WarehouseInventory[]>([]);
-}
