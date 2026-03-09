@@ -9,7 +9,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TRANSFER_STATUS_TYPES, type TransferStatusType } from "@/types/TableTypes";
+import { useDebounce } from "@/hooks/useDebounce";
 
+export type DIRECTION_TYPE = 'ALL'|'INBOUND'|'OUTBOUND' 
 const Transfers = () => {
     const { selectedWarehouse, hasWarehouseAccess } = useAuth();
     // TODO: Handle Missing Warehouse
@@ -19,14 +21,21 @@ const Transfers = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState<string>('');
+    const debouncedSearch = useDebounce(search, 300);
     const [statusFilter, setStatusFilter] = useState<TransferStatusType| 'ALL'>('ALL');
+    const [directionFilter, setDirectionFilter] = useState<DIRECTION_TYPE>('ALL');
 
     const fetchTransferOrder = async () => {
       try {
+        console.log("Api triggered");
         setIsLoading(true);
-        const response = await api.get('/transfers');
+        const response = await api.get('/transfers',{
+          params:{
+            
+          }
+        });
         console.log("Transfers response: ",response.data);
       } catch (error:any) {
         console.log("Error occured in fetchTransferOrder: ",error);
@@ -38,7 +47,7 @@ const Transfers = () => {
 
     useEffect(()=>{
       fetchTransferOrder();
-    },[])
+    },[page, debouncedSearch, statusFilter, directionFilter])
 
     
 
@@ -70,26 +79,35 @@ const Transfers = () => {
               className="w-56 pl-8"
             />
           </div>
+        </div>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="Status" className="text-xs font-medium text-gray-500">Status</label>
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as TransferStatusType|'ALL'); setPage(1); }}>
-              <SelectTrigger className="w-44"><SelectValue/></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Status</SelectItem>
-                {TRANSFER_STATUS_TYPES.map(transferType => (
-                  <SelectItem key={transferType.type} value={transferType.type}>{transferType.label}</SelectItem>
-                ))}
+        <div className="grid gap-1.5">
+          <label htmlFor="Status" className="text-xs font-medium text-gray-500">Status</label>
+          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as TransferStatusType|'ALL'); setPage(1); }}>
+            <SelectTrigger className="w-44"><SelectValue/></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Status</SelectItem>
+              {TRANSFER_STATUS_TYPES.map(transferType => (
+                <SelectItem key={transferType.type} value={transferType.type}>{transferType.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-              </SelectContent>
-
-            </Select>
-
-          </div>
+        <div className="grid gap-1.5">
+          <label htmlFor="Direction" className="text-xs font-medium text-gray-500">Direction</label>
+          <Select value={directionFilter} onValueChange={(v) => {setDirectionFilter(v as DIRECTION_TYPE); setPage(1); }}>
+            <SelectTrigger className="w-36"><SelectValue/></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All</SelectItem>
+              <SelectItem value="OUTBOUND">Outbound</SelectItem>
+              <SelectItem value="INBOUND">Inbound</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         </div>
 
-      </div>
 
 
     </motion.div>
