@@ -163,10 +163,10 @@ const NewTransfer = () => {
             <Button onClick={()=>{
                 handleTransferSubmit();
             }}
-                disabled={selectedProducts.length===0 || !toWarehouse}
+                disabled={selectedProducts.length===0 || !toWarehouse || isLoading}
             >
                 <Truck className='mr-2 h-4 w-4'/>
-                Initiate Transfer
+                {isLoading? 'Loading...' : 'Initiate Transfer'}
             </Button>
 
         </div>
