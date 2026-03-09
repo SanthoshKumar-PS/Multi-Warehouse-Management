@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 
 export type PaymentStatus = "PENDING" | "APPROVED" 
 
@@ -20,7 +21,16 @@ export const INVENTORY_TXN_TYPES = [
 
 export type InventoryTxnType = typeof INVENTORY_TXN_TYPES[number]['type']
 
-// export type InventoryTxnType = "INWARD" | "OUTWARD" | "RESERVE" | "RELEASE" | "TRANSFER_IN" | "TRANSFER_OUT" | "ADJUSTMENT"
+export const TRANSFER_STATUS_TYPES = [
+  { type: "CREATED", label: "Created" },
+  { type: "DISPATCHED", label: "Dispatched" },
+  { type: "IN_TRANSIT", label: "In Transit" },
+  { type: "PARTIALLY_RECEIVED", label: "Partially Completed" },
+  { type: "COMPLETED", label: "Completed" },
+  { type: "CANCELLED", label: "Cancelled" }
+] as const;
+
+export type TransferStatusType = typeof TRANSFER_STATUS_TYPES[number]['type'];
 
 export interface Company {
   id: number;
