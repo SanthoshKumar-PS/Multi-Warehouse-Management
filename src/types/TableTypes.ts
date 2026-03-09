@@ -1,8 +1,8 @@
-import { number } from "framer-motion";
+
 
 export type PaymentStatus = "PENDING" | "APPROVED" 
 
-export type EventTpe = "status_change" | "payment_uploaded" | "payment_approved"
+export type EventType = "status_change" | "payment_uploaded" | "payment_approved"
 
 export type PaymentType = "SCREENSHOT" | "ADJUSTMENT" | "FINANCE"
 
@@ -31,6 +31,18 @@ export const TRANSFER_STATUS_TYPES = [
 ] as const;
 
 export type TransferStatusType = typeof TRANSFER_STATUS_TYPES[number]['type'];
+
+export interface User {
+  id: number;
+  trigram: string;
+  company: string;
+  location?: string | null;
+  roleId: number;
+  region?: string | null;
+
+  warehouses?: UserWarehouse[]
+  transferOrders?: TransferOrder[]
+}
 
 export interface Company {
   id: number;
@@ -90,6 +102,39 @@ export interface SalesOrder {
   payments?: SalesPayment[];
 }
 
+export interface OrderDetails {
+  id: number;
+  orderId: string;
+  mnId: string;
+  quantity: number;
+  rateUnit: number;
+  taxableAmount: number;
+  taxedAmount: number;
+  product?: Product;
+}
+
+export interface SalesPayment {
+  id: number;
+  orderNo: string;
+  amountPaid: number;
+  image_url?: string | null;
+  paymentStatus: PaymentStatus;
+  paymentType: PaymentType;
+  approvedBy?: string | null;
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+}
+
+export interface SalesOrderStatusHistory {
+  id: number;
+  orderNo: string;
+  status: number;
+  modified_at: string | Date;
+  transition: string;
+  duration_from_start: string;
+  duration_from_previous: string;
+}
+
 export interface Product {
   id: number;
   brand: string;
@@ -104,7 +149,9 @@ export interface Product {
   unit_price?: string | null;
   inventory?: WarehouseInventory[];
   productPrice?: ProductPrice;
-  transactions:  InventoryTransaction[]
+  transactions?:  InventoryTransaction[]
+  transferItems?: TransferItem[]
+  orderDetails?: OrderDetails[]
 }
 
 export interface ProductPrice {
@@ -118,7 +165,22 @@ export interface Warehouse {
   id: number;
   name: string;
   location: string;
+
+  transactions?: InventoryTransaction[];
+  warehouses?: UserWarehouse[];
   inventory?: WarehouseInventory[];
+
+  transfersFrom?: TransferOrder[];
+  transfersTo?: TransferOrder[];
+}
+
+export interface UserWarehouse {
+  userId: number
+  warehouseId: number
+  accessType: WarehouseAccessType
+
+  user?: User
+  warehouse?: Warehouse
 }
 
 export interface WarehouseInventory {
@@ -141,49 +203,52 @@ export interface InventoryTransaction {
   reference?: string | null;
   createdAt: string | Date;
   createdBy?: string | null;
+  
   physicalBefore: number;
   physicalAfter: number;
   reservedBefore: number;
   reservedAfter: number;
+
   product?:Product;
+  warehouse?: Warehouse;
+  user?: User;
 }
 
-export interface OrderDetails {
+export interface TransferOrder {
   id: number;
-  orderId: string;
-  mnId: string;
-  quantity: number;
-  rateUnit: number;
-  taxableAmount: number;
-  taxedAmount: number;
-  product?: Product;
-}
+  transferNo: string;
 
-export interface SalesPayment {
-  id: number;
-  orderNo: string;
-  amountPaid: number;
-  image_url?: string | null;
-  paymentStatus: PaymentStatus;
-  paymentType: PaymentType;
+  fromWarehouseId: number;
+  toWarehouseId: number;
+  fromWarehouseName?:string;
+  toWarehouseName?:string;
+  
+  status: TransferStatusType
+  createdBy?: string | null
+
+  dispatchedAt?: string | Date;
+  receivedAt?: string | Date;
   createdAt: string | Date;
+  updatedAt: string | Date;
+
+  user?: User
+  fromWarehouse?: Warehouse; 
+  toWarehouse?: Warehouse;
+  items?: TransferItem[]
+
 }
 
-export interface SalesOrderStatusHistory {
+export interface TransferItem {
   id: number;
-  orderNo: string;
-  status: number;
-  modified_at: string | Date;
-  transition: string;
-  duration_from_start: string;
-  duration_from_previous: string;
-}
+  transferId: number;
+  transferNo: string;
+  productMn: string;
 
-export interface User {
-  id: number;
-  trigram: string;
-  company: string;
-  location?: string | null;
-  roleId: number;
-  region?: string | null;
+  requestedQty: number;
+  dispatchedQty: number;
+  receivedQty: number;
+
+  transfer?: TransferOrder;
+  product?: Product
+
 }
