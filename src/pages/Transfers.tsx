@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthProvider";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { ArrowLeftRight, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TRANSFER_STATUS_TYPES, type TransferStatusType } from "@/types/TableTypes";
+import { TRANSFER_STATUS_TYPES, type TransferOrder, type TransferStatusType } from "@/types/TableTypes";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Spinner } from "@/components/Spinner";
+import TransferTable from "@/components/Transfers/TransferTable";
 
 export type DIRECTION_TYPE = 'ALL'|'INBOUND'|'OUTBOUND' 
 const Transfers = () => {
@@ -21,6 +23,7 @@ const Transfers = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [transferOrders, setTransferOrders] = useState<TransferOrder[]>([]);
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState<string>('');
     const debouncedSearch = useDebounce(search, 300);
@@ -29,14 +32,15 @@ const Transfers = () => {
 
     const fetchTransferOrder = async () => {
       try {
-        console.log("Api triggered");
         setIsLoading(true);
+        await new Promise(res => setTimeout(res,1500))
         const response = await api.get('/transfers',{
           params:{
-            
+            page, debouncedSearch, statusFilter, directionFilter
           }
         });
         console.log("Transfers response: ",response.data);
+        setTransferOrders(response.data.transferOrders);
       } catch (error:any) {
         console.log("Error occured in fetchTransferOrder: ",error);
         handleApiError(error);
@@ -47,7 +51,7 @@ const Transfers = () => {
 
     useEffect(()=>{
       fetchTransferOrder();
-    },[page, debouncedSearch, statusFilter, directionFilter])
+    },[selectedWarehouse.warehouseId, page, debouncedSearch, statusFilter, directionFilter])
 
     
 
@@ -106,7 +110,22 @@ const Transfers = () => {
           </Select>
         </div>
 
+      </div>
+
+      {/* Main Content */}
+      {isLoading? (
+        <div className="flex-1 flex justify-center items-center py-30 md:py-40">
+          <Spinner />
         </div>
+      ) : transferOrders.length===0? (
+        <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12 text-gray-500">
+          <ArrowLeftRight className="mb-3 h-10 w-10"/>
+          <p className="font-medium">No transfer orders found.</p>
+          <p className="text-sm">Try changing the filters applied.</p>
+        </div>
+      ) : (
+        <TransferTable transferOrders={transferOrders}/>
+      )}
 
 
 
