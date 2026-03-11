@@ -188,11 +188,11 @@ const filteredInventoryProducts = useMemo(() => {
           <Spinner />
         </div>
       ) : filteredInventoryProducts.length===0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-          <PackageOpen className="mb-4 h-12 w-12"/>
+        <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12 text-gray-500">
+          <PackageOpen className="mb-4 h-10 w-10"/>
           <p className="text-lg font-medium">No Data Found.</p>
-          <p className="text-sm">No inventory records for this warehouse.</p>
-          <p className="text-sm">Try adjusting the filters if any.</p>
+          <p className="text-sm font-medium">No inventory records for this warehouse.</p>
+          <p className="text-sm font-medium">Try adjusting the filters if any.</p>
         </div>
 
       ) : (

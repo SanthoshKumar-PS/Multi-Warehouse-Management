@@ -4,12 +4,14 @@ import type { TransferOrder } from "@/types/TableTypes";
 import { formatUtcToIST } from "@/utils/formatUtcToIST";
 import { Badge } from "../ui/badge";
 import { transferStatusBadge } from "@/utils/transferStatusBadge";
+import { useNavigate } from "react-router-dom";
 
 type TransferTableProps = {
     transferOrders: TransferOrder[];
 }
 const TransferTable = ({transferOrders}:TransferTableProps) => {
     const { selectedWarehouse } = useAuth();
+    const navigate = useNavigate();
   return (
     <div className="w-full overflow-x-auto rounded-lg border bg-card">
       <Table className="table-auto min-w-[1100px] w-full">
@@ -40,6 +42,7 @@ const TransferTable = ({transferOrders}:TransferTableProps) => {
                         <TableRow
                             key={transferOrder.id}
                             className="[&_td]:py-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                            onClick={()=>{navigate(`/transfers/${transferOrder.transferNo}`)}}
                         >
                             <TableCell className="whitespace-nowrap text-sm text-gray-600">
                                 {formatUtcToIST(transferOrder.createdAt)}

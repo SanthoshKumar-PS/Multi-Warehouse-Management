@@ -131,7 +131,7 @@ const Transactions = () => {
         <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12 text-gray-500">
           <ArrowLeftRight className="mb-3 h-10 w-10"/>
           <p className="font-medium">No transactions found.</p>
-          <p className="font-medium">Try changing the filters applied.</p>
+          <p className="text-sm">Try changing the filters applied.</p>
         </div>
       ) : (
         <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true}/>
