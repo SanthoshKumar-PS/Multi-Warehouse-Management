@@ -37,31 +37,51 @@ export function validateInventoryTransaction({
 
   const atp = physicalQty - reservedQty;
 
+  const newPhysical = physicalQty + qtyChange;
+
   let error = "";
 
   switch (type) {
     case "RESERVE":
-      if (qty > atp) error = `Only ${atp} available to promise`;
+      if (qtyChange <= 0) error = "Reserve must increase reserved stock";
+      if (qtyChange > atp) error = `Only ${atp} available to promise`;
       break;
 
     case "RELEASE":
-      if (qty > reservedQty) error = `Only ${reservedQty} reserved`;
-      break;
-
-    case "OUTWARD":
-    case "TRANSFER_OUT":
-      if (qty > atp) error = "Not enough available stock";
-      break;
-
-    case "ADJUSTMENT":
-      if (physicalQty + qtyChange < reservedQty)
-        error = "Cannot reduce below reserved stock";
+      if(qtyChange >=0 ) error = "Release must reduce reserved stock"
+      if (Math.abs(qtyChange) > reservedQty) error = `Only ${reservedQty} reserved`;
       break;
 
     case "INWARD":
-    case "TRANSFER_IN":
-      // always allowed
+      if(qtyChange <= 0)
+        error = "Inward must increase physical stock.";
       break;
+
+    case "OUTWARD":
+      if (qtyChange >= 0)
+        error = "Outward must reduce physical stock"
+      if(Math.abs(qtyChange)>atp)
+        error = "Not enough available stock";
+      break;
+
+    case "TRANSFER_IN":
+      if (qtyChange <= 0)
+        error = "Transfer in must increase physical stock";
+      break;
+
+    case "TRANSFER_OUT":
+      if (qtyChange >= 0)
+        error = "Transfer out must reduce stock"
+
+      if (Math.abs(qtyChange) > reservedQty)
+        error = "Cannot transfer more than reserved stock"
+      break;
+
+    case "ADJUSTMENT":
+      if (newPhysical < reservedQty)
+        error = "Cannot reduce below reserved stock";
+      break;
+
   }
 
   if(qtyChange===0) error = `Quantity cannot be zero`
