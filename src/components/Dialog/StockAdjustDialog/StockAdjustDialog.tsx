@@ -14,7 +14,8 @@ export type StockTransactionInput = {
     productMn: string;
     warehouseId: number;
     type: string;
-    qtyChange: number;
+    qty: number;
+    adjSign: 1 | -1;
     reference: string;
 }
 interface DialogProps {
@@ -67,15 +68,18 @@ const handleProcess = () => {
     toast.error(result.error);
     return;
   }
-  console.log('Inventory Transaction Validation success')
-
-  onSubmit({
+  console.log('Inventory Transaction Validation success');
+  const data: StockTransactionInput = {
     productMn: inventoryProduct.productMn,
     warehouseId: inventoryProduct.warehouseId,
     type,
-    qtyChange: result.qtyChange,
+    qty: qty,
+    adjSign:adjSign,
     reference,
-  });
+  }
+  console.log("Submitted data to backend: ",data);
+
+  onSubmit(data);
 };
 
   const physical = inventoryProduct?.physicalQty ?? 0;

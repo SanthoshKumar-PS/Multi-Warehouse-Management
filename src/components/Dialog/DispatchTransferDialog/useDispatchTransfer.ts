@@ -1,6 +1,6 @@
 import { handleApiError } from "@/components/handleApiError";
 import { api } from "@/lib/api";
-import type { TransferOrder } from "@/types/TableTypes";
+import type { TransferItem, TransferOrder } from "@/types/TableTypes";
 import { useState } from "react"
 
 export const useDispatchTransfer = () => {
@@ -15,11 +15,13 @@ export const useDispatchTransfer = () => {
         setIsOpen(false);
     }
 
-    const submitDispatchTransfer = async (transfer: TransferOrder) => {
+    const submitDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
         try {
             setIsLoading(true);
-            const response = await api.patch(`/transfers/${transfer.transferNo}`, {
-                transfer
+            const response = await api.patch(`/transfers/${transferNo}`, {
+                fromWarehouseId,
+                transferNo,
+                dispatchTransferItems
             })
             console.log("submitDispatchTransfer Response: ",response.data);
         } catch (error:any) {
