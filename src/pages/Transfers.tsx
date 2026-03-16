@@ -12,6 +12,8 @@ import { TRANSFER_STATUS_TYPES, type TransferOrder, type TransferStatusType } fr
 import { useDebounce } from "@/hooks/useDebounce";
 import { Spinner } from "@/components/Spinner";
 import TransferTable from "@/components/Transfers/TransferTable";
+import { usePagination } from "@/components/Pagination/usePagination";
+import Pagination from "@/components/Pagination/Pagination";
 
 export type DIRECTION_TYPE = 'ALL'|'INBOUND'|'OUTBOUND' 
 const Transfers = () => {
@@ -24,11 +26,12 @@ const Transfers = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [transferOrders, setTransferOrders] = useState<TransferOrder[]>([]);
-    const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState<string>('');
     const debouncedSearch = useDebounce(search, 300);
     const [statusFilter, setStatusFilter] = useState<TransferStatusType| 'ALL'>('ALL');
     const [directionFilter, setDirectionFilter] = useState<DIRECTION_TYPE>('ALL');
+
+    const { page, setPage, totalPages, setTotalPages, limit, setLimit } = usePagination();
 
     const fetchTransferOrder = async () => {
       try {
@@ -36,11 +39,12 @@ const Transfers = () => {
         await new Promise(res => setTimeout(res,1500))
         const response = await api.get('/transfers',{
           params:{
-            page, debouncedSearch, statusFilter, directionFilter
+            debouncedSearch, statusFilter, directionFilter, page, limit
           }
         });
         console.log("Transfers response: ",response.data);
         setTransferOrders(response.data.transferOrders);
+        setTotalPages(response.data.totalPages);
       } catch (error:any) {
         console.log("Error occured in fetchTransferOrder: ",error);
         handleApiError(error);
@@ -51,7 +55,7 @@ const Transfers = () => {
 
     useEffect(()=>{
       fetchTransferOrder();
-    },[selectedWarehouse.warehouseId, page, debouncedSearch, statusFilter, directionFilter])
+    },[selectedWarehouse.warehouseId, page, limit, debouncedSearch, statusFilter, directionFilter])
 
     
 
@@ -126,6 +130,16 @@ const Transfers = () => {
       ) : (
         <TransferTable transferOrders={transferOrders}/>
       )}
+
+
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        setLimit={setLimit}
+        totalRows={transferOrders.length}
+      />
 
 
 
