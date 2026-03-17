@@ -53,7 +53,7 @@ const DispatchTransferDialog = ({ open, loading,fromWarehouseId, transferNo, tra
             <DialogDescription>Confirm the dispatched quantity for each product. Dispatched quantity cannot exceed requested.</DialogDescription>
         </DialogHeader>
         
-        <div className="w-full overflow-x-auto rounded-lg border bg-card">
+        <div className="w-full max-h-[60vh] overflow-y-auto overflow-x-auto rounded-lg border bg-card">
             <Table className="w-full ">
                 <TableHeader>
                 <TableRow className="[&_th]:py-4 bg-gray-50/50">
@@ -131,7 +131,7 @@ const DispatchTransferDialog = ({ open, loading,fromWarehouseId, transferNo, tra
         </div>
 
         <div className="flex w-full gap-2">
-            <Button variant='outline' className="flex-1">
+            <Button variant='outline' className="flex-1" onClick={onClose}>
                 Cancel
             </Button>
             <Button variant='default' className="flex-1" 
@@ -145,7 +145,7 @@ const DispatchTransferDialog = ({ open, loading,fromWarehouseId, transferNo, tra
                     
                 }}
             >
-                Dispatch
+                {loading?'Loading...':'Dispatch'}
             </Button>
 
         </div>

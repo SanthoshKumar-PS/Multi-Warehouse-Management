@@ -24,9 +24,13 @@ export const useDispatchTransfer = () => {
                 dispatchTransferItems
             })
             console.log("submitDispatchTransfer Response: ",response.data);
+            return {
+                transferOrder: response.data.transferOrder
+            }
         } catch (error:any) {
             console.log("Error occured in submitDispatchTransfer: ",error);
             handleApiError(error);
+            return null
         } finally{
             setIsLoading(false);
         }
