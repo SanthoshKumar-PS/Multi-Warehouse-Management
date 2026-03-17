@@ -33,28 +33,36 @@ const Transfers = () => {
 
     const { page, setPage, totalPages, setTotalPages, limit, setLimit } = usePagination();
 
-    const fetchTransferOrder = async () => {
+    const fetchTransferOrder = async (signal?:AbortSignal) => {
       try {
         setIsLoading(true);
-        await new Promise(res => setTimeout(res,1500))
         const response = await api.get('/transfers',{
           params:{
             debouncedSearch, statusFilter, directionFilter, page, limit
-          }
+          },
+          signal:signal
         });
         console.log("Transfers response: ",response.data);
         setTransferOrders(response.data.transferOrders);
         setTotalPages(response.data.totalPages);
       } catch (error:any) {
+        if(error.name === 'CanceledError' || error.name === 'AbortError') return;
         console.log("Error occured in fetchTransferOrder: ",error);
         handleApiError(error);
       } finally{
-        setIsLoading(false);
+        if(!signal?.aborted){
+          setIsLoading(false);
+        }
       }
     }
 
     useEffect(()=>{
-      fetchTransferOrder();
+      const controller = new AbortController();
+      fetchTransferOrder(controller.signal);
+
+      return () => {
+        controller.abort();
+      }
     },[selectedWarehouse.warehouseId, page, limit, debouncedSearch, statusFilter, directionFilter])
 
     
