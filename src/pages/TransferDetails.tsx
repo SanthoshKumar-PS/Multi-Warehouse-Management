@@ -18,6 +18,7 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useDispatchTransfer } from "@/components/Dialog/DispatchTransferDialog/useDispatchTransfer";
 import DispatchTransferDialog from "@/components/Dialog/DispatchTransferDialog/DispatchTransferDialog";
+import TransactionsTable from "@/components/Transactions/TransactionsTable";
 
 
 const TransferDetails = () => {
@@ -26,6 +27,7 @@ const TransferDetails = () => {
     const { selectedWarehouse } = useAuth();
 
     const [transfer, setTransfer] = useState<TransferOrder | null>(null);
+    const [inventoryTransactions, setInventoryTransactions] = useState<InventoryTransaction[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const isSourceWarehouse = selectedWarehouse?.warehouseId === transfer?.fromWarehouseId;
@@ -40,8 +42,9 @@ const TransferDetails = () => {
     const handleDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
         const result = await submitDispatchTransfer(fromWarehouseId, transferNo ,dispatchTransferItems)
         if(!result) return;
-        const { transferOrder } = result;
+        const { transferOrder, inventoryTransactions } = result;
         setTransfer(transferOrder);
+        setInventoryTransactions(inventoryTransactions);
         toast.success('Transfer order dispatched successfully.');
         closeDialog()
         console.log("Result for dispatch transfer: ",result);
@@ -64,6 +67,8 @@ const TransferDetails = () => {
             const response = await api.get(`/transfers/${transferNo}`);
             console.log("fetchTransferOrder Response: ",response.data);
             setTransfer(response.data.transfer);
+            console.log("response.data.inventoryTransactions: ",response.data.inventoryTransactions);
+            setInventoryTransactions(response.data.inventoryTransactions);
 
         } catch (error:any) {
             console.log("Error occured in fetchTransferOrder: ",error);
@@ -209,6 +214,10 @@ const TransferDetails = () => {
         {/* Items Table */}
         <h2 className="text-lg font-semibold text-gray-800">Transfer Items</h2>
         <TransferItemsTable transferItems={transfer.items??[]}/>
+        
+        {/* Inventory Transactions */}
+        <h2 className="text-lg font-semibold text-gray-800">Transactions</h2>
+        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true}/>
 
 
         <DispatchTransferDialog

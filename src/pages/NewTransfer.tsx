@@ -51,7 +51,10 @@ const NewTransfer = () => {
         try{
             setIsLoading(true);
             const response = await api.post('/transfers/new',payload);
-            console.log("Response recieved: ",response.data);
+            console.log("Created new transfer response: ",response.data);
+            toast.success('Transfer Order Created Successfully.');
+            const createdTransferNo = response.data.transferNo;
+            navigate(`/transfers/${createdTransferNo}`)
 
         } catch(error:any){
             console.log("Error occured in handleTransferSubmit: ",error);

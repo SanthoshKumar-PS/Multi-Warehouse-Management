@@ -25,7 +25,8 @@ export const useDispatchTransfer = () => {
             })
             console.log("submitDispatchTransfer Response: ",response.data);
             return {
-                transferOrder: response.data.transferOrder
+                transferOrder: response.data.transferOrder,
+                inventoryTransactions : response.data.inventoryTransactions
             }
         } catch (error:any) {
             console.log("Error occured in submitDispatchTransfer: ",error);
