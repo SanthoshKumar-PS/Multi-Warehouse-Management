@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import AuthProvider from "./context/AuthProvider";
 import Transfers from "./pages/Transfers";
 import NewTransfer from "./pages/NewTransfer";
+import TransferDetails from "./pages/TransferDetails";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/inventory/:productMn" element={<ProductDetail />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/transfers" element={<Transfers />} />
+            <Route path="/transfers/:transferNo" element={<TransferDetails />} />
             <Route path="/transfers/new" element={<NewTransfer />} />
             <Route path="/low-stock" element={<LowStock />} />
           </Route>

@@ -16,8 +16,8 @@ export const useStockAdjustDialog = () => {
         try {
         const res = await api.get("/stock/product", { params: { productMn } });
         setInventoryProduct(res.data.inventoryProduct);
-        } catch (e) {
-        handleApiError(e);
+        } catch (error:any) {
+        handleApiError(error);
         } finally {
         setIsLoading(false);
         }

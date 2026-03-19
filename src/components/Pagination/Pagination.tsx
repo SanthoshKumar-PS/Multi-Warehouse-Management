@@ -28,7 +28,7 @@ const Pagination = ({page, setPage, totalPages, limit, setLimit, totalRows} : Pa
             <SelectValue placeholder={limit} />
           </SelectTrigger>
           <SelectContent side="top">
-            {[5, 20, 30, 50, 100].map((pageSize) => (
+            {[5, 10, 20, 30, 50, 100].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}
               </SelectItem>
