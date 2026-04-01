@@ -315,3 +315,94 @@ export const postInventoryTransaction = async(req:AuthRequest, res:Response) => 
     }
 }
 
+
+export const getInventoryTransactions = async(req:AuthRequest, res:Response) => {
+    try {
+        const { selectedWarehouseId } = req.query;
+        const { debouncedSearch, dateFrom, dateTo, page=1, limit=20 } = req.query;
+        const search = typeof(debouncedSearch)==='string'? debouncedSearch.trim():undefined
+        const txnType = req.query.txnType as InventoryTxnType | 'ALL';
+        const pageNo = Number(page);
+        const limitNo = Number(limit);
+        const skip = (pageNo-1)*limitNo
+        console.log(`Page no: ${pageNo}  --- Skip: ${skip}`);
+        console.log(`Page: ${page} limit:${limit}`);
+
+        console.log("Req query params: ", req.query);
+        if(!selectedWarehouseId ){
+            console.log("Warehouse id is missing :", selectedWarehouseId);
+            return res.status(403).json({ message:'Missing warehouseId.' })
+        }
+        const whereClause: Prisma.InventoryTransactionWhereInput = {
+            warehouseId:Number(selectedWarehouseId)
+        };
+
+        if (txnType && txnType !== "ALL") {
+            whereClause.type = txnType
+        }
+
+        if(dateFrom || dateTo){
+            whereClause.createdAt = {}
+            if(dateFrom && typeof dateFrom === "string"){
+                whereClause.createdAt.gte = new Date(dateFrom);
+            }
+
+            if(dateTo && typeof dateTo === "string"){
+                whereClause.createdAt.lte = new Date(dateTo)
+            }
+        }
+
+        if (search) {
+            whereClause.OR = [
+                {
+                    productMn: {
+                        contains: search,
+                    },
+                },
+                {
+                    reference: {
+                        contains: search,
+                    },
+                },
+            ];
+        }
+
+        const inventoryTransactionsPromise = prisma.inventoryTransaction.findMany({
+            where:{
+                ...whereClause
+            },
+            include:{
+                product:{
+                    select:{
+                        description:true
+                    }
+                }
+            },
+            orderBy:{
+                createdAt:'desc'
+            },
+            take:limitNo,
+            skip
+        })
+        const totalRowsPromise = prisma.inventoryTransaction.count({
+            where:{
+                ...whereClause
+            }
+        })
+
+        const [ inventoryTransactions, totalRows ] = await Promise.all([
+            inventoryTransactionsPromise,
+            totalRowsPromise
+        ])
+        console.log("Total count: ", totalRows);
+        return res.status(200).json({ 
+            inventoryTransactions, 
+            totalPages: totalRows===0 ? 1 : Math.ceil(totalRows/limitNo),
+            message: 'InventoryTransaction fetched successfully.'
+        })
+        
+    } catch (error:any) {
+        console.log('Error occured in getInventoryProduct: ', error);
+        return res.status(500).json({ message:'Internal Server Error.' });        
+    }
+}
