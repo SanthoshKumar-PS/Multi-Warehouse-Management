@@ -1,5 +1,5 @@
 import type { TransferItem } from "@/types/TableTypes";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -25,6 +25,15 @@ const ReceiveTransferDialog = ({open, loading, toWarehouseId, transferNo, transf
             receivedQty: item.dispatchedQty
         }))
     );
+    
+    useEffect(()=>{
+        setReceiveTransferItems(
+            transferItems.map(item => ({
+                ...item,
+                receivedQty: item.dispatchedQty
+            }))
+        )
+    },[transferItems])
 
     const handleReceiveQtyChange = (productMn:string, qty:number) => {
         setReceiveTransferItems(prev => {
