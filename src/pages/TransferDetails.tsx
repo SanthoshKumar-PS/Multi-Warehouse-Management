@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { useDispatchTransfer } from "@/components/Dialog/DispatchTransferDialog/useDispatchTransfer";
 import DispatchTransferDialog from "@/components/Dialog/DispatchTransferDialog/DispatchTransferDialog";
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
+import { useReceiveTransfer } from "@/components/Dialog/ReceiveTransferDialog/useReceiveTransfer";
+import ReceiveTransferDialog from "@/components/Dialog/ReceiveTransferDialog/ReceiveTransferDialog";
 
 
 const TransferDetails = () => {
@@ -37,7 +39,9 @@ const TransferDetails = () => {
     const totalReceived = (transfer?.items??[]).reduce((sum,item) => sum+item.receivedQty , 0);
     const totalLost = totalRequested - totalReceived;
 
-    const { open, isLoading: dialogLoading, openDialog, closeDialog, submitDispatchTransfer } = useDispatchTransfer();
+    const { open: isDispatchDialogOpen, isLoading: dispatchLoading, openDialog: openDispatchDialog, closeDialog: closeDispatchDialog, submitDispatchTransfer } = useDispatchTransfer();
+
+    const { open: isReceiveDialogOpen, isLoading: receiveLoading, openDialog: openReceiveDialog, closeDialog: closeReceiveDialog, submitReceiveTransfer } = useReceiveTransfer();
 
     const handleDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
         const result = await submitDispatchTransfer(fromWarehouseId, transferNo ,dispatchTransferItems)
@@ -46,7 +50,19 @@ const TransferDetails = () => {
         setTransfer(transferOrder);
         setInventoryTransactions(inventoryTransactions);
         toast.success('Transfer order dispatched successfully.');
-        closeDialog()
+        closeDispatchDialog()
+        console.log("Result for dispatch transfer: ",result);
+
+    }
+
+    const handleReceiveTransfer = async (toWarehouseId: number, transferNo:string,receiveTransferItems: TransferItem[]) => {
+        const result = await submitReceiveTransfer(toWarehouseId, transferNo ,receiveTransferItems)
+        if(!result) return;
+        const { transferOrder, inventoryTransactions } = result;
+        // setTransfer(transferOrder);
+        // setInventoryTransactions(inventoryTransactions);
+        toast.success('Transfer order received successfully.');
+        closeDispatchDialog()
         console.log("Result for dispatch transfer: ",result);
 
     }
@@ -137,8 +153,8 @@ const TransferDetails = () => {
                             Cancel Transfer
                         </Button>
                         <Button onClick={()=>{
-                            console.log("Opening dialog");
-                            openDialog();
+                            console.log("Opening Dispatch Dialog");
+                            openDispatchDialog();
                         }}>
                             <Truck className="mr-2 h-4 w-4"/>
                             Dispatch
@@ -147,7 +163,10 @@ const TransferDetails = () => {
                 )}
                 {/* TODO: Decide which status to use */}
                 {(transfer.status === 'DISPATCHED' || transfer.status === 'IN_TRANSIT') && isDestinationWarehouse && (
-                    <Button onClick={()=>{console.log("Receive button clicked");}}>
+                    <Button onClick={()=>{
+                        console.log("Receive button clicked");
+                        openReceiveDialog();
+                        }}>
                         <PackageCheck className="mr-2 h-4 w-4"/>
                         Receive Transfer
                     </Button>
@@ -221,13 +240,23 @@ const TransferDetails = () => {
 
 
         <DispatchTransferDialog
-            open={open}
-            loading={dialogLoading}
+            open={isDispatchDialogOpen}
+            loading={dispatchLoading}
             fromWarehouseId= {transfer.fromWarehouseId}
             transferNo={transfer.transferNo}
             transferItems={transfer.items??[]}
-            onClose={closeDialog}
+            onClose={closeDispatchDialog}
             onSubmit={handleDispatchTransfer}
+        />
+ 
+        <ReceiveTransferDialog
+            open={isReceiveDialogOpen}
+            loading={receiveLoading}
+            toWarehouseId= {transfer.toWarehouseId}
+            transferNo={transfer.transferNo}
+            transferItems={transfer.items??[]}
+            onClose={closeReceiveDialog}
+            onSubmit={handleReceiveTransfer}
         />
 
 
