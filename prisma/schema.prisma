@@ -484,6 +484,7 @@ enum InventoryTxnType {
   TRANSFER_IN
   TRANSFER_OUT
   ADJUSTMENT
+  LOSS
 }
 
 enum TransferStatus {

@@ -8,7 +8,8 @@ export const deriveQtyChangeFromTxnType = (type: InventoryTxnType, qty: number, 
     TRANSFER_IN: 1,
     OUTWARD: -1,
     TRANSFER_OUT: -1,
-    ADJUSTMENT: adjSign
+    ADJUSTMENT: adjSign,
+    LOSS: 0
     }
 
     const qtyChange = qty * multipliers[type]

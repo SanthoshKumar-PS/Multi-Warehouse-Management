@@ -76,9 +76,12 @@ export function validateInventoryTransaction({
         error = "Cannot reduce below reserved stock";
       break;
 
+    case "LOSS":
+      break;
+
   }
 
-  if (qtyChange === 0) error = "Quantity cannot be zero";
+  if (type !== "LOSS" && qtyChange === 0) error = "Quantity cannot be zero";
 
   return {
     isValid: !error,

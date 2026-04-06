@@ -22,6 +22,8 @@ export const calculateInventoryInputs = ( type: InventoryTxnType, physicalQty:nu
     case "RELEASE":
       newReserved = reservedQty + qtyChange;
       break;
+    case "LOSS":
+      break;
   }
 
   console.log(`Calculated newPhysical qty:${newPhysical} newReservedQty:${newReserved} `);
