@@ -18,7 +18,7 @@ export const useDispatchTransfer = () => {
     const submitDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
         try {
             setIsLoading(true);
-            const response = await api.patch(`/transfers/${transferNo}`, {
+            const response = await api.patch(`/transfers/dispatch/${transferNo}`, {
                 fromWarehouseId,
                 transferNo,
                 dispatchTransferItems

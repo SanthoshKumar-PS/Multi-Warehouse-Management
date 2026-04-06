@@ -37,7 +37,7 @@ const TransferDetails = () => {
     const totalRequested = (transfer?.items??[]).reduce((sum,item) => sum+item.requestedQty, 0);
     const totalDispatched = (transfer?.items??[]).reduce((sum,item) => sum+item.dispatchedQty, 0);
     const totalReceived = (transfer?.items??[]).reduce((sum,item) => sum+item.receivedQty , 0);
-    const totalLost = totalRequested - totalReceived;
+    const totalLost = totalDispatched - totalReceived;
 
     const { open: isDispatchDialogOpen, isLoading: dispatchLoading, openDialog: openDispatchDialog, closeDialog: closeDispatchDialog, submitDispatchTransfer } = useDispatchTransfer();
 
@@ -59,11 +59,11 @@ const TransferDetails = () => {
         const result = await submitReceiveTransfer(toWarehouseId, transferNo ,receiveTransferItems)
         if(!result) return;
         const { transferOrder, inventoryTransactions } = result;
-        // setTransfer(transferOrder);
-        // setInventoryTransactions(inventoryTransactions);
+        setTransfer(transferOrder);
+        setInventoryTransactions(inventoryTransactions);
         toast.success('Transfer order received successfully.');
-        closeDispatchDialog()
-        console.log("Result for dispatch transfer: ",result);
+        closeReceiveDialog()
+        console.log("Result for receive transfer: ",result);
 
     }
 
