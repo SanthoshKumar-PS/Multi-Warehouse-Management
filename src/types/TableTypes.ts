@@ -17,6 +17,7 @@ export const INVENTORY_TXN_TYPES = [
   { type: "TRANSFER_IN", label: "Transfer In" },
   { type: "TRANSFER_OUT", label: "Transfer Out" },
   { type: "ADJUSTMENT", label: "Adjustment" },
+  { type: "LOSS", label: "Loss" },
 ] as const;
 
 export type InventoryTxnType = typeof INVENTORY_TXN_TYPES[number]['type']
@@ -25,12 +26,21 @@ export const TRANSFER_STATUS_TYPES = [
   { type: "CREATED", label: "Created" },
   { type: "DISPATCHED", label: "Dispatched" },
   { type: "IN_TRANSIT", label: "In Transit" },
-  { type: "PARTIALLY_RECEIVED", label: "Partially Completed" },
+  { type: "PARTIALLY_RECEIVED", label: "Partially Received" },
   { type: "COMPLETED", label: "Completed" },
   { type: "CANCELLED", label: "Cancelled" }
 ] as const;
 
 export type TransferStatusType = typeof TRANSFER_STATUS_TYPES[number]['type'];
+
+export const PURCHASE_STATUS_TYPE = [
+  { type: "CREATED", label: "Created" },
+  { type: "CANCELLED", label: "Cancelled" },
+  { type: "PARTIALLY_RECEIVED", label: "Partially Received" },
+  { type: "COMPLETED", label: "Completed" },
+] as const;
+
+export type PurchaseStatusType = typeof PURCHASE_STATUS_TYPE[number]['type']
 
 export interface User {
   id: number;
@@ -152,6 +162,7 @@ export interface Product {
   transactions?:  InventoryTransaction[]
   transferItems?: TransferItem[]
   orderDetails?: OrderDetails[]
+  purchaseOrderItems?: PurchaseOrderItem[]
 }
 
 export interface ProductPrice {
@@ -172,6 +183,7 @@ export interface Warehouse {
 
   transfersFrom?: TransferOrder[];
   transfersTo?: TransferOrder[];
+  purchaseOrders?: PurchaseOrder[]
 }
 
 export interface UserWarehouse {
@@ -197,6 +209,7 @@ export interface WarehouseInventory {
 export interface InventoryTransaction {
   id: number;
   warehouseId: number;
+  warehouseName: string;
   productMn: string;
   qtyChange: number;
   type: InventoryTxnType;
@@ -251,4 +264,56 @@ export interface TransferItem {
   transfer?: TransferOrder;
   product?: Product
 
+}
+
+export interface PurchaseOrder {
+  id: number;
+  poNumber: string;
+  warehouseId: number;
+  warehouseName: string;
+  supplierId: number;
+  supplierName: string
+  status: PurchaseStatusType;
+  orderDate: string | Date;
+  expectedDate: string | Date;
+  createdBy: string;
+  remarks?: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  warehouse?: Warehouse;
+  supplier?: Supplier;
+  createdByUser?:User;
+  items?: PurchaseOrderItem[];
+}
+
+export interface PurchaseOrderItem {
+  id: number;
+  purchaseOrderId: number;
+  productMn: string
+  orderedQty: number;
+  receivedQty: number;
+
+  createdAt: string | Date;
+  purchaseOrder?: PurchaseOrder;
+  product?: Product;
+}
+
+
+export interface Supplier {
+  id: number;
+  name: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+
+  gstNumber?: string;
+
+  deletedAt?: string | null;  
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  purchaseOrders?: PurchaseOrder[]
 }
