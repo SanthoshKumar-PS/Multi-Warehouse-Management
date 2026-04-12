@@ -8,4 +8,5 @@ export const transactionTypeBadge: Record<InventoryTxnType, string> = {
   TRANSFER_IN: "bg-purple-100 text-purple-700 border-purple-300",
   TRANSFER_OUT: "bg-orange-100 text-orange-700 border-orange-300",
   ADJUSTMENT: "bg-gray-100 text-gray-700 border-gray-300",
+  LOSS: "bg-red-100 text-red-800 border-red-400"
 };
