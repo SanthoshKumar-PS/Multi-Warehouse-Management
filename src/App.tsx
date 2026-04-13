@@ -11,6 +11,8 @@ import AuthProvider from "./context/AuthProvider";
 import Transfers from "./pages/Transfers";
 import NewTransfer from "./pages/NewTransfer";
 import TransferDetails from "./pages/TransferDetails";
+import PurchaseOrders from "./pages/PurchaseOrders";
+import NewPurchaseOrder from "./pages/NewPurchaseOrder";
 
 const App = () => {
   return (
@@ -26,6 +28,8 @@ const App = () => {
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/transfers/:transferNo" element={<TransferDetails />} />
+            <Route path="/purchase-orders" element={<PurchaseOrders />} />
+            <Route path="/purchase-orders/new" element={<NewPurchaseOrder />} />
             <Route path="/transfers/new" element={<NewTransfer />} />
             <Route path="/low-stock" element={<LowStock />} />
           </Route>

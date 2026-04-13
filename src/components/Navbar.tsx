@@ -4,7 +4,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Warehouse, LogOut, MapPin, LayoutDashboard, Package, ArrowLeftRight, AlertTriangle, Truck } from "lucide-react";
+import { ChevronDown, Warehouse, LogOut, MapPin, LayoutDashboard, Package, ArrowLeftRight, AlertTriangle, Truck, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getWarehouseEmoji } from "@/utils/getWarehouseEmoji";
 
@@ -13,6 +13,7 @@ const navLinks = [
   { to: "/inventory", label: "Inventory", icon: Package },
   { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { to: "/transfers", label: "Transfers", icon: Truck },
+  { to: "/purchase-orders", label: "Purchase", icon: ShoppingCart },
   { to: "/low-stock", label: "Low Stock", icon: AlertTriangle },
 ];
 const Navbar = () => {
