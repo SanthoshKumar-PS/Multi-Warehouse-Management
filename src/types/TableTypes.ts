@@ -33,14 +33,14 @@ export const TRANSFER_STATUS_TYPES = [
 
 export type TransferStatusType = typeof TRANSFER_STATUS_TYPES[number]['type'];
 
-export const PURCHASE_STATUS_TYPE = [
+export const PURCHASE_STATUS_TYPES = [
   { type: "CREATED", label: "Created" },
   { type: "CANCELLED", label: "Cancelled" },
   { type: "PARTIALLY_RECEIVED", label: "Partially Received" },
   { type: "COMPLETED", label: "Completed" },
 ] as const;
 
-export type PurchaseStatusType = typeof PURCHASE_STATUS_TYPE[number]['type']
+export type PurchaseStatusType = typeof PURCHASE_STATUS_TYPES[number]['type']
 
 export interface User {
   id: number;
