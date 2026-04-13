@@ -1,14 +1,17 @@
 import type { Supplier } from "@/types/TableTypes"
 import { useMemo, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
 import { Check, Plus, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 
 type SupplierSelectorProps = {
     suppliers: Supplier[];
-    selectedSupplierId: number;
+    selectedSupplierId: number | null;
     onSelect:(supplierId: number) => void;
     onAddSupplier: (supplier: Supplier) => void;
 }
@@ -70,7 +73,7 @@ const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplie
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                     {/* Search */}
                     <div className="flex items-center border-b px-3">
-                        <Search className="mr-2 h-4 w-4 shrink-0 text-gray-800"/>
+                        <Search className="mr-2 h-4 w-4 shrink-0 text-gray-500"/>
                         <input
                             placeholder="Search supplier..."
                             value= {search}
@@ -126,9 +129,72 @@ const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplie
                             Add Supplier
                         </button>
                     </div>
-                    
+
                 </PopoverContent>
             </Popover>
+
+            {/* Add Supplier Dialog */}
+            <Dialog open={addOpen} onOpenChange={setAddOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Add New Supplier</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-3 py-2">
+                        <div className="grid gap-1.5">
+                            <Label>Name <span className="text-destructive">*</span></Label>
+                            <Input value={form.name} onChange={(e) => updateForm("name", e.target.value)} required placeholder="Supplier name" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="grid gap-1.5">
+                                <Label>Contact Person</Label>
+                                <Input value={form.contactPerson} onChange={(e) => updateForm("contactPerson", e.target.value)} placeholder="Name" />
+                            </div>
+                            <div className="grid gap-1.5">
+                                <Label>Phone</Label>
+                                <Input value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder="+91…" />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="grid gap-1.5">
+                                <Label>Email</Label>
+                                <Input type="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} placeholder="email@example.com" />
+                            </div>
+                            <div className="grid gap-1.5">
+                                <Label>GST Number</Label>
+                                <Input value={form.gstNumber} onChange={(e) => updateForm("gstNumber", e.target.value)} placeholder="GSTIN" />
+                            </div>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Address</Label>
+                            <Input value={form.address} onChange={(e) => updateForm("address", e.target.value)} placeholder="Street address" />
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="grid gap-1.5">
+                                <Label>City</Label>
+                                <Input value={form.city} onChange={(e) => updateForm("city", e.target.value)} placeholder="City" />
+                            </div>
+                            <div className="grid gap-1.5">
+                                <Label>State</Label>
+                                <Input value={form.state} onChange={(e) => updateForm("state", e.target.value)} placeholder="State" />
+                            </div>
+                            <div className="grid gap-1.5">
+                                <Label>Country</Label>
+                                <Input value={form.country} onChange={(e) => updateForm("country", e.target.value)} placeholder="India" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="w-full flex items-center justify-between gap-2">
+                        <Button variant='outline' className="flex-1" onClick={()=> setAddOpen(false)}>Cancel</Button>
+                        <Button onClick={handleAddSubmit} className="flex-1" disabled={!form.name.trim()}>
+                            <Plus className="mr-2 h-4 w-4"/>
+                            Add Supplier
+                        </Button>
+                    </DialogFooter>
+
+                </DialogContent>
+
+            </Dialog>
         </>
   )
 }
