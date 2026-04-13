@@ -16,11 +16,12 @@ export const useReceiveTransfer = () => {
         setOpen(false);
     }
 
-    const submitReceiveTransfer = async (toWarehouseId:number, transferNo:string, receiveTransferItems: TransferItem[]) => {
+    const submitReceiveTransfer = async (toWarehouseId:number, toWarehouseName: string, transferNo:string, receiveTransferItems: TransferItem[]) => {
         try {
             setIsLoading(true);
             const response = await api.patch(`/transfers/receive/${transferNo}`,{
                 toWarehouseId,
+                toWarehouseName,
                 transferNo,
                 receiveTransferItems
             })

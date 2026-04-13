@@ -12,13 +12,14 @@ type ReceiveTransferDialogProps = {
     open: boolean;
     loading: boolean;
     toWarehouseId: number;
+    toWarehouseName: string;
     transferNo: string;
     transferItems: TransferItem[]
     onClose: () => void;
-    onSubmit:(toWarehouseId: number, transferNo: string, receiveTransferItems: TransferItem[]) => void;
+    onSubmit:(toWarehouseId: number, toWarehouseName: string, transferNo: string, receiveTransferItems: TransferItem[]) => void;
 }
 
-const ReceiveTransferDialog = ({open, loading, toWarehouseId, transferNo, transferItems,onClose, onSubmit}: ReceiveTransferDialogProps) => {
+const ReceiveTransferDialog = ({open, loading, toWarehouseId, toWarehouseName, transferNo, transferItems,onClose, onSubmit}: ReceiveTransferDialogProps) => {
     const [receiveTransferItems, setReceiveTransferItems] = useState<TransferItem[]>(() => 
         transferItems.map(item => ({
             ...item,
@@ -147,7 +148,7 @@ const ReceiveTransferDialog = ({open, loading, toWarehouseId, transferNo, transf
                 <Button variant='default' className="flex-1" 
                     onClick={()=>{
                         console.log("Receive Button has been clicked.");
-                        onSubmit(toWarehouseId, transferNo, receiveTransferItems);
+                        onSubmit(toWarehouseId, toWarehouseName, transferNo, receiveTransferItems);
                         console.log("receive payload sent: ",{
                             transferNo,
                             receiveTransferItems
@@ -155,7 +156,7 @@ const ReceiveTransferDialog = ({open, loading, toWarehouseId, transferNo, transf
                         
                     }}
                 >
-                    {loading?'Loading...':'Dispatch'}
+                    {loading?'Loading...':'Receive'}
                 </Button>
 
             </div>

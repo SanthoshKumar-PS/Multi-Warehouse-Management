@@ -11,12 +11,13 @@ type DispatchTransferDialogProps = {
     open: boolean;
     loading: boolean;
     fromWarehouseId: number;
+    fromWarehouseName: string;
     transferNo: string;
     transferItems: TransferItem[];
     onClose: () => void;
-    onSubmit: (fromWarehouseId: number, transferNo: string, dispatchTransferItems: TransferItem[]) => void;
+    onSubmit: (fromWarehouseId: number, fromWarehouseName: string, transferNo: string, dispatchTransferItems: TransferItem[]) => void;
 }
-const DispatchTransferDialog = ({ open, loading,fromWarehouseId, transferNo, transferItems, onClose, onSubmit }:DispatchTransferDialogProps) => {
+const DispatchTransferDialog = ({ open, loading,fromWarehouseId, fromWarehouseName, transferNo, transferItems, onClose, onSubmit }:DispatchTransferDialogProps) => {
     const [dispatchTransferItems, setDispatchTransferItems] = useState<TransferItem[]>(()=>
         transferItems.map(item => ({
             ...item,
@@ -137,7 +138,7 @@ const DispatchTransferDialog = ({ open, loading,fromWarehouseId, transferNo, tra
             <Button variant='default' className="flex-1" 
                 onClick={()=>{
                     console.log("Dispatch Button has been clicked.");
-                    onSubmit(fromWarehouseId, transferNo, dispatchTransferItems);
+                    onSubmit(fromWarehouseId, fromWarehouseName, transferNo, dispatchTransferItems);
                     console.log("Dispatch payload sent: ",{
                         transferNo,
                         dispatchTransferItems

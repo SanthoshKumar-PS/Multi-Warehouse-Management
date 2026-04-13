@@ -15,11 +15,12 @@ export const useDispatchTransfer = () => {
         setIsOpen(false);
     }
 
-    const submitDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
+    const submitDispatchTransfer = async (fromWarehouseId: number, fromWarehouseName: string, transferNo:string,dispatchTransferItems: TransferItem[]) => {
         try {
             setIsLoading(true);
             const response = await api.patch(`/transfers/dispatch/${transferNo}`, {
                 fromWarehouseId,
+                fromWarehouseName,
                 transferNo,
                 dispatchTransferItems
             })
