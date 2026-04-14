@@ -1,20 +1,24 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { InventoryTransaction } from "@/types/TableTypes";
-import { transactionTypeBadge } from "@/utils/typeBadge";
+import { transactionTypeBadge } from "@/utils/transactionTypeBadge";
 import { Badge } from "../ui/badge";
 import { formatUtcToIST } from "@/utils/formatUtcToIST";
 
 type TransactionsTableType = {
     inventoryTransactions: InventoryTransaction[],
-    showProduct?: boolean
+    showProduct?: boolean,
+    showWarehouse? :boolean
 }
 
-const TransactionsTable = ({ inventoryTransactions = [], showProduct = false }: TransactionsTableType) => {
+const TransactionsTable = ({ inventoryTransactions = [], showProduct = false, showWarehouse = false }: TransactionsTableType) => {
     return (
         <div className="w-full overflow-x-auto rounded-lg border bg-card">
             <Table className="table-auto min-w-[1100px] w-full">
                 <TableHeader>
                     <TableRow className="[&_th]:py-4 bg-gray-50/50">
+                        {showWarehouse && (
+                            <TableHead className="w-[100px]">Warehouse</TableHead>
+                        )}
                         {showProduct && (
                             <TableHead className="min-w-[200px]">Product</TableHead>
                         )}
@@ -37,6 +41,11 @@ const TransactionsTable = ({ inventoryTransactions = [], showProduct = false }: 
                     ) : (
                         inventoryTransactions.map((tx) => (
                             <TableRow key={tx.id} className="[&_td]:py-4 hover:bg-gray-50/50 transition-colors">
+                                {showWarehouse && (
+                                    <TableCell  className="text-center text-sm text-gray-800 font-medium max-w-[200px]">
+                                        {tx.warehouseName}
+                                    </TableCell>
+                                )}
                                 {showProduct && (
                                     <TableCell>
                                         <div className="max-w-[250px]">
