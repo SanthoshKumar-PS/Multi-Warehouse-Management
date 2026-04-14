@@ -21,6 +21,8 @@ import DispatchTransferDialog from "@/components/Dialog/DispatchTransferDialog/D
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
 import { useReceiveTransfer } from "@/components/Dialog/ReceiveTransferDialog/useReceiveTransfer";
 import ReceiveTransferDialog from "@/components/Dialog/ReceiveTransferDialog/ReceiveTransferDialog";
+import { useCancelTransfer } from "@/components/Dialog/CancelTransferDialog/useCancelTransfer";
+import CancelTransferDialog from "@/components/Dialog/CancelTransferDialog/CancelTransferDialog";
 
 
 const TransferDetails = () => {
@@ -43,8 +45,10 @@ const TransferDetails = () => {
 
     const { open: isReceiveDialogOpen, isLoading: receiveLoading, openDialog: openReceiveDialog, closeDialog: closeReceiveDialog, submitReceiveTransfer } = useReceiveTransfer();
 
-    const handleDispatchTransfer = async (fromWarehouseId: number, transferNo:string,dispatchTransferItems: TransferItem[]) => {
-        const result = await submitDispatchTransfer(fromWarehouseId, transferNo ,dispatchTransferItems)
+    const { open: isCancelDialogOpen, isLoading: cancelLoading, openDialog: openCancelDialog, closeDialog: closeCancelDialog, submitCancelTransfer } = useCancelTransfer()
+
+    const handleDispatchTransfer = async (fromWarehouseId: number, fromWarehouseName: string, transferNo:string,dispatchTransferItems: TransferItem[]) => {
+        const result = await submitDispatchTransfer(fromWarehouseId, fromWarehouseName, transferNo ,dispatchTransferItems)
         if(!result) return;
         const { transferOrder, inventoryTransactions } = result;
         setTransfer(transferOrder);
@@ -55,8 +59,8 @@ const TransferDetails = () => {
 
     }
 
-    const handleReceiveTransfer = async (toWarehouseId: number, transferNo:string,receiveTransferItems: TransferItem[]) => {
-        const result = await submitReceiveTransfer(toWarehouseId, transferNo ,receiveTransferItems)
+    const handleReceiveTransfer = async (toWarehouseId: number, toWarehouseName: string, transferNo:string,receiveTransferItems: TransferItem[]) => {
+        const result = await submitReceiveTransfer(toWarehouseId, toWarehouseName, transferNo ,receiveTransferItems)
         if(!result) return;
         const { transferOrder, inventoryTransactions } = result;
         setTransfer(transferOrder);
@@ -65,6 +69,17 @@ const TransferDetails = () => {
         closeReceiveDialog()
         console.log("Result for receive transfer: ",result);
 
+    }
+
+    const handleCancelTransfer = async (fromWarehouseId: number, fromWarehouseName:string, transferNo:string) => {
+        const result = await submitCancelTransfer(fromWarehouseId, fromWarehouseName, transferNo)
+        if(!result) return;
+        const { transferOrder ,inventoryTransactions } = result;
+        setTransfer(transferOrder);
+        setInventoryTransactions(inventoryTransactions);
+        toast.success('Transfer order cancelled successfully.');
+        closeCancelDialog();
+        console.log("Result for cancel transfer: ",result);
     }
 
 
@@ -148,7 +163,10 @@ const TransferDetails = () => {
             <div className="flex items-center gap-2">
                 {transfer.status === 'CREATED' && isSourceWarehouse && (
                     <>
-                        <Button variant='destructive' onClick={()=>{console.log("Handle Cancel");}}>
+                        <Button variant='destructive' onClick={()=>{
+                            console.log("Handle Cancel");
+                            openCancelDialog();
+                            }}>
                             <XCircle className="mr-2 h-4 w-4"/>
                             Cancel Transfer
                         </Button>
@@ -236,13 +254,14 @@ const TransferDetails = () => {
         
         {/* Inventory Transactions */}
         <h2 className="text-lg font-semibold text-gray-800">Transactions</h2>
-        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true}/>
+        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true} showWarehouse={true}/>
 
 
         <DispatchTransferDialog
             open={isDispatchDialogOpen}
             loading={dispatchLoading}
             fromWarehouseId= {transfer.fromWarehouseId}
+            fromWarehouseName= {transfer.fromWarehouseName??"Not Provided"}
             transferNo={transfer.transferNo}
             transferItems={transfer.items??[]}
             onClose={closeDispatchDialog}
@@ -253,10 +272,21 @@ const TransferDetails = () => {
             open={isReceiveDialogOpen}
             loading={receiveLoading}
             toWarehouseId= {transfer.toWarehouseId}
+            toWarehouseName= {transfer.toWarehouseName??"Not Provided"}
             transferNo={transfer.transferNo}
             transferItems={transfer.items??[]}
             onClose={closeReceiveDialog}
             onSubmit={handleReceiveTransfer}
+        />
+
+        <CancelTransferDialog
+            transferNo = {transfer.transferNo}
+            fromWarehouseId = {transfer.fromWarehouseId}
+            fromWarehouseName= {transfer.fromWarehouseName??"Not Provided"}
+            open = {isCancelDialogOpen}
+            loading= {cancelLoading}
+            onClose = {closeCancelDialog}
+            onSubmit = {handleCancelTransfer}
         />
 
 
