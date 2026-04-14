@@ -30,7 +30,7 @@ const ProductSelectionDialog = ({ open, onClose, isLoading, inventoryProducts, o
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-1 overflow-hidden rounded-2xl">
         <DialogHeader className="p-6 pb-2">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold flex items-center gap-2">

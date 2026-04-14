@@ -18,6 +18,7 @@ export const useProductSelectionDialog = () => {
             setInventoryProducts(response.data.products)
             
         } catch (error:any) {
+            console.log("Error occured at fetchInventoryProducts: ", error);
             handleApiError(error)
         } finally {
             setIsLoading(false);
