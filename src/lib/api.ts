@@ -10,10 +10,12 @@ api.interceptors.request.use(config => {
     const token = localStorage.getItem('auth_token')
     const rawWarehouse = localStorage.getItem('auth_selectedWarehouse');
     let selectedWarehouseId = null;
+    let selectedWarehouseName = null;
     if(rawWarehouse){
         try {
             const parsed = JSON.parse(rawWarehouse);
-            selectedWarehouseId = parsed.warehouseId;            
+            selectedWarehouseId = parsed.warehouseId;
+            selectedWarehouseName = parsed.warehouseName;      
         } catch (error) {
             console.log("Failed to parse auth_selectedWarehouse.");  
         }
@@ -25,9 +27,10 @@ api.interceptors.request.use(config => {
 
     config.params = {
         ...config.params,
-        selectedWarehouseId
+        selectedWarehouseId,
+        selectedWarehouseName
     }
-    // console.log(`API token-${token} selectedWarehouseId - ${selectedWarehouseId}`)
+    // console.log(`API token-${token} selectedWarehouseId - ${selectedWarehouseId} selectedWarehouseName-${selectedWarehouseName}`)
 
     return config
 

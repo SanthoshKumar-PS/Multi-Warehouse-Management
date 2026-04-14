@@ -83,7 +83,7 @@ const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplie
                     </div>
 
                     {/* Suppliers List */}
-                    <ScrollArea className="max-h-60">
+                    <ScrollArea className="h-60 ">
                         {filteredSuppliers.length==0? (
                             <p className="py-6 text-center text-sm text-gray-500">No suppliers found.</p>
                         ) : (

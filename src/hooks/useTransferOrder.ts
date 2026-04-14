@@ -50,7 +50,7 @@ export const useTransferOrder = () => {
 
     const onQuantityChange = (productMn: string, newQty:number) => {
         if(newQty<=0){
-            toast.error('Quantity cannot be zero.')
+            toast.error('Quantity must be greater than 0.')
             return;
         }
 

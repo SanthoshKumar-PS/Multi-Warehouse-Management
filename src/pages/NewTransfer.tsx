@@ -1,8 +1,8 @@
 import { useAuth, type WarehouseAccess } from '@/context/AuthProvider'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useProductSelectionDialog } from '@/components/Dialog/ProductionSelectionDialog/useProductSelectionDialog'
-import ProductSelectionDialog from '@/components/Dialog/ProductionSelectionDialog/ProductSelectionDialog';
+import { useProductSelectionDialog } from '@/components/Dialog/ProductSelectionDialog/useProductSelectionDialog'
+import ProductSelectionDialog from '@/components/Dialog/ProductSelectionDialog/ProductSelectionDialog';
 import { Button } from '@/components/ui/button';
 import type { WarehouseInventory } from '@/types/TableTypes';
 import { useTransferOrder } from '@/hooks/useTransferOrder';
