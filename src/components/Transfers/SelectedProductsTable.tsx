@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { SelectedProductType } from "@/hooks/useTransferOrder";
+import { Package } from "lucide-react";
 
 
 type Props = {
@@ -11,6 +12,15 @@ type Props = {
 };
 
 const SelectedProductsTable = ({ products, onQtyChange, onRemove }: Props) => {
+  if(products.length===0){
+    return (
+    <div className='flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-gray-800'>
+      <Package className='mb-3 h-10 w-10'/>
+      <p className='font-medium'>No products added yet.</p>
+      <p className='text-sm'>Click "Add Product" to get started</p>
+    </div>
+    )
+  }
   return (
     <div className="w-full overflow-x-auto rounded-lg border bg-card">
       <Table className="min-w-[700px]">

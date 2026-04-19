@@ -143,19 +143,11 @@ const NewTransfer = () => {
         </div>
 
         {/* Selected Products Table */}
-        {selectedProducts.length === 0 ? (
-            <div className='flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-gray-800'>
-                <Package className='mb-3 h-10 w-10'/>
-                <p className='font-medium'>No products added yet.</p>
-                <p className='text-sm'>Click "Add Product" to get started</p>
-            </div>
-        ) : (
-            <SelectedProductsTable 
-                products={selectedProducts}
-                onQtyChange={onQuantityChange}
-                onRemove={removeProduct}
-            />
-        )}
+        <SelectedProductsTable 
+            products={selectedProducts}
+            onQtyChange={onQuantityChange}
+            onRemove={removeProduct}
+        />
 
 
         {/* Footer Actions */}
