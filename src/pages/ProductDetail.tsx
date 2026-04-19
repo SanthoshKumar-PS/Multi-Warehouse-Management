@@ -14,10 +14,12 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import StockAdjustDialog, { type StockTransactionInput } from "@/components/Dialog/StockAdjustDialog/StockAdjustDialog";
 import { useStockAdjustDialog } from "@/components/Dialog/StockAdjustDialog/useStockAdjustDialog";
-import { transactionTypeBadge } from "@/utils/typeBadge";
+import { transactionTypeBadge } from "@/utils/transactionTypeBadge";
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
 import Pagination from "@/components/Pagination/Pagination";
 import { usePagination } from "@/components/Pagination/usePagination";
+import { useStockAvailability } from "@/components/Dialog/StockAvailabilityDialog/useStockAvailability";
+import StockAvailabilityDialog from "@/components/Dialog/StockAvailabilityDialog/StockAvailabilityDialog";
 
 const ProductDetail = () => {
   const { selectedWarehouse, user, hasWarehouseAccess } = useAuth();
@@ -26,6 +28,7 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { open, inventoryProduct: dialogInventoryProduct, isLoading: dialogLoading, openDialog, closeDialog, submitStockTransaction } = useStockAdjustDialog();
   const { page, setPage, totalPages, setTotalPages, limit, setLimit } = usePagination();
+  const { open: isStockAvailabilityOpen, isLoading: isStockAvailabilityLoading, openDialog: openStockAvailability, closeDialog: closeStockAvailability, stockAvailable } = useStockAvailability();
 
   const handleSubmitStockTransaction = async (data: StockTransactionInput) => {
     const result = await submitStockTransaction(data);
@@ -121,13 +124,24 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {canManage && (
-          <Button onClick={()=> {
-            openDialog(inventoryProduct.productMn)
+        <div className="flex items-center justify-center gap-2">
+          <Button onClick={()=>{
+            console.log("Clicked to check available");
+            openStockAvailability(productMn);
           }}>
-            Adjust Stock
+            Check Availability
           </Button>
-        )}
+          
+          {canManage && (
+            <Button onClick={()=> {
+              openDialog(inventoryProduct.productMn)
+            }}>
+              Adjust Stock
+            </Button>
+          )}
+        </div>
+
+
 
       </div>
 
@@ -198,6 +212,13 @@ const ProductDetail = () => {
         loading={dialogLoading} 
         onClose={closeDialog} 
         onSubmit={handleSubmitStockTransaction}
+      />
+
+      <StockAvailabilityDialog
+        open={isStockAvailabilityOpen}
+        onClose={closeStockAvailability}
+        loading={isStockAvailabilityLoading}
+        stockData={stockAvailable}
       />
 
 
