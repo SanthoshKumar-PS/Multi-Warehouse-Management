@@ -14,8 +14,9 @@ type SupplierSelectorProps = {
     selectedSupplierId: number | null;
     onSelect:(supplierId: number) => void;
     onAddSupplier: (supplier: Supplier) => void;
+    isLoading: boolean;
 }
-const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplier} : SupplierSelectorProps) => {
+const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplier, isLoading} : SupplierSelectorProps) => {
     const [open, setOpen] = useState<boolean>(false);
     const [search, setSearch] = useState<string>("");
     const [addOpen, setAddOpen] = useState<boolean>(false); 
@@ -84,7 +85,12 @@ const SupplierSelector = ({suppliers, selectedSupplierId, onSelect, onAddSupplie
 
                     {/* Suppliers List */}
                     <ScrollArea className="h-60 ">
-                        {filteredSuppliers.length==0? (
+                        {isLoading? (
+                            <div className="flex flex-col items-center justify-center h-40 space-y-3">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <p className="text-sm text-gray-500">Loading ...</p>
+                            </div>
+                        ) : filteredSuppliers.length==0? (
                             <p className="py-6 text-center text-sm text-gray-500">No suppliers found.</p>
                         ) : (
                             <div className="p-1">
