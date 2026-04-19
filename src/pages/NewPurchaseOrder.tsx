@@ -5,9 +5,9 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthProvider"
 import { usePurchaseOrder } from "@/hooks/usePurchaseOrder";
 import { api } from "@/lib/api";
-import type { Supplier } from "@/types/TableTypes";
+import type { Product, Supplier } from "@/types/TableTypes";
 import { motion } from "framer-motion";
-import { ArrowLeft, CalendarIcon, Divide, Plus } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Divide, Import, Plus, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -16,6 +16,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { usePurchaseProductDialog } from "@/components/Dialog/PurchaseProductDialog/usePurchaseProductDialog";
+import PurchaseProductDialog from "@/components/Dialog/PurchaseProductDialog/PurchaseProductDialog";
+import SelectedPurchaseProductTable from "@/components/Purchase/SelectedPurchaseProductTable";
+import { toast } from "sonner";
 
 
 const NewPurchaseOrder = () => {
@@ -23,11 +26,13 @@ const NewPurchaseOrder = () => {
     const navigate = useNavigate();
     if(!selectedWarehouse) return //TODO:handle selectedWarehouse === null
     const canManage = hasWarehouseAccess(selectedWarehouse.warehouseId, 'MANAGE');
+    // TODO: decide what to do when the user doesn't have manage access
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { poOrderItems, addProduct, removeProduct, onQuantityChange } = usePurchaseOrder();
     const [suppliersList, setSuppliersList] = useState<Supplier[]>([]);
     const [supplierId, setSupplierId] = useState<number | null>(null);
+    const [isSupplierLoading, setIsSupplierLoading] = useState<boolean>(false);
     const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
     const [expectedDate, setExpectedDate] = useState<Date>();
     const [orderNotes, setOrderNotes] = useState<string>("");
@@ -35,15 +40,21 @@ const NewPurchaseOrder = () => {
     const [pickerOpen, setPickerOpen] = useState<boolean>(false);
     const [pickerSearch, setPickerSearch] = useState<string>("");
 
-    const { open, isLoading: isPurchaseProductLoading, productsList, fetchProductsList, openDialog, closeDialog } = usePurchaseProductDialog();
+    const { open: isPurchaseProductDialogOpen, isLoading: isPurchaseProductLoading, productsList, fetchProductsList, openDialog: openPurchaseProductDialog, closeDialog: closePurchaseProductDialog } = usePurchaseProductDialog();
 
     const handleAddNewSupplier = (supplier: Supplier) => {
+        // TODO: handle add new supplier
         setSuppliersList(prev => [...prev,supplier]);
+    }
+
+    const handleSelectProduct = (product: Product) => {
+        console.log("Clicked product: ",product);
+        addProduct(product);
     }
 
     const fetchSupplierList = async () => {
         try {
-            setIsLoading(true);
+            setIsSupplierLoading(true);
             const response = await api.get('/purchase-orders/suppliers')
             setSuppliersList(response.data.suppliers);
             console.log("Response from fetchSupplierList: ",response);
@@ -51,13 +62,55 @@ const NewPurchaseOrder = () => {
             console.log("Error occured in fetchSupplierList: ",error);
             handleApiError(error);
         } finally{
-            setIsLoading(false);
+            setIsSupplierLoading(false);
         }
     } 
 
     useEffect(()=>{
         fetchSupplierList()
     },[])
+
+    const handleCreatePurchaseOrder = async () => {
+        try {
+            if(!supplierId){
+                toast.info("Please select supplier to create purchase order.")
+                return;
+            }
+            if(!expectedDate){
+                toast.info("Select expected date to proceed further.")
+                return;
+            }
+            if(poOrderItems.length===0){
+                toast.info("Select atleast product to proceed.")
+                return;
+            }
+            const payload = {
+                poOrderItems,
+                supplierId,
+                expectedDate,
+                orderNotes
+            }
+
+            try {
+                setIsLoading(true);
+                console.log("Payload sent to create purchase order: ",payload);
+                const response = await api.post('/purchase-orders/new', payload);
+                console.log("Response receieved for purchase: ", response.data);
+            } catch (error:any) {
+                console.log("Error occured in handleCreatePurchaseOrder: ",error);
+                handleApiError(error);
+            } finally{
+                setIsLoading(false);
+            }
+            
+            
+        } catch (error:any) {
+            console.log("Error occured in handleCreatePurchaseOrder: ",error);
+            handleApiError(error);
+        } finally{
+            setIsLoading(false);
+        }
+    }
   return (
     <motion.div
         initial={{ opacity:0, y:10 }}
@@ -85,6 +138,7 @@ const NewPurchaseOrder = () => {
                     selectedSupplierId={supplierId}
                     onSelect={setSupplierId}
                     onAddSupplier={handleAddNewSupplier}
+                    isLoading={isSupplierLoading}
                 />
 
             </div>
@@ -131,9 +185,33 @@ const NewPurchaseOrder = () => {
         {/* Product lines header */}
         <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-800">Order Items</h2>
-            <Button onClick={() => console.log("Clicked thus")}>
+            <Button onClick={() => {openPurchaseProductDialog()}}>
                 <Plus className="mr-2 h-4 w-4"/>
                 Add Product
+            </Button>
+
+        </div>
+
+        {/* Selected Purchase Products Table */}
+        <SelectedPurchaseProductTable
+            purchaseProductItems={poOrderItems}
+            onQtyChange={onQuantityChange}
+            onRemove={removeProduct}
+        />
+
+        {/* Footer Actions */}
+        {/* Footer Actions */}
+        <div className='flex items-center justify-end gap-3'>
+            <Button variant='outline' onClick={()=>navigate('/transfers')}>
+                Cancel
+            </Button>
+            <Button onClick={()=>{
+                handleCreatePurchaseOrder()
+            }}
+                disabled={poOrderItems.length===0 || isLoading}
+            >
+                <Import className='mr-2 h-4 w-4'/>
+                {isLoading? 'Loading...' : 'Create Purchase'}
             </Button>
 
         </div>
@@ -141,6 +219,14 @@ const NewPurchaseOrder = () => {
 
 
         {/* Purchase Product Dialog */}
+        <PurchaseProductDialog
+            open = {isPurchaseProductDialogOpen}
+            onClose= {closePurchaseProductDialog} 
+            purchaseProducts= {productsList}
+            isLoading= {isPurchaseProductLoading}
+            onProductClick= {handleSelectProduct}
+            reFetchProducts = {fetchProductsList}
+        />
 
 
     </motion.div>
