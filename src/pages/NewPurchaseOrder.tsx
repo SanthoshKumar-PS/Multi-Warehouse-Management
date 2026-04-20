@@ -95,6 +95,8 @@ const NewPurchaseOrder = () => {
                 setIsLoading(true);
                 console.log("Payload sent to create purchase order: ",payload);
                 const response = await api.post('/purchase-orders/new', payload);
+                const poNumber = response.data.purchaseOrder.poNumber;
+                navigate(`/purchase-orders/${poNumber}`)
                 console.log("Response receieved for purchase: ", response.data);
             } catch (error:any) {
                 console.log("Error occured in handleCreatePurchaseOrder: ",error);
