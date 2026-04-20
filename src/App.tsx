@@ -13,6 +13,7 @@ import NewTransfer from "./pages/NewTransfer";
 import TransferDetails from "./pages/TransferDetails";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import NewPurchaseOrder from "./pages/NewPurchaseOrder";
+import PurchaseOrderDetail from "./pages/PurchaseOrderDetail";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/transfers/:transferNo" element={<TransferDetails />} />
             <Route path="/purchase-orders" element={<PurchaseOrders />} />
+            <Route path="/purchase-orders/:poNumber" element={<PurchaseOrderDetail />} />
             <Route path="/purchase-orders/new" element={<NewPurchaseOrder />} />
             <Route path="/transfers/new" element={<NewTransfer />} />
             <Route path="/low-stock" element={<LowStock />} />
