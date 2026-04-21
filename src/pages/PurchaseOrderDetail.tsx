@@ -15,6 +15,8 @@ import { purchaseStatusBadge } from '@/utils/purchaseStatusBadge';
 import { formatUtcToIST } from '@/utils/formatUtcToIST';
 import { getWarehouseEmoji } from "@/utils/getWarehouseEmoji";
 import PurchaseItemsTable from "@/components/Purchase/PurchaseItemsTable";
+import { useReceivePurchase, type ReceivePurchaseItemType } from "@/components/Dialog/ReceivePurchaseDialog/useReceivePurchase";
+import ReceivePurchaseDialog from "@/components/Dialog/ReceivePurchaseDialog/ReceivePurchaseDialog";
 const PurchaseOrderDetail = () => {
     const { poNumber } = useParams();
     const navigate = useNavigate();
@@ -27,6 +29,13 @@ const PurchaseOrderDetail = () => {
     const totalReceived = purchaseOrder?.items?.reduce((s,i) => s+i.receivedQty,0) ?? 0;
     const totalRemaining = totalOrdered - totalReceived;
 
+    const { open: isReceiveDialogOpen, isLoading: receiveLoading, openDialog: openReceiveDialog, closeDialog: closeReceiveDialog, submitReceivePurchase } = useReceivePurchase();
+
+    const handleReceivePurchase = async (poNumber:string, receievePurchaseItems: ReceivePurchaseItemType[]) => {
+        const result = await submitReceivePurchase(poNumber, receievePurchaseItems)
+        if(!result) return;
+        console.log("Result after receiving purchase order: ", result);
+    }
 
     const fetchPurchaseOrder = async () => {
         try{
@@ -99,7 +108,11 @@ const PurchaseOrderDetail = () => {
             {/* TODO */}
             {/* Active Buttons */}
             <div className='flex items-center gap-2'>
-                <Button>Action Buttons</Button>
+                <Button
+                    onClick={() => {
+                        openReceiveDialog();
+                    }}
+                >Action Buttons</Button>
             </div>
         </div>
 
@@ -169,6 +182,17 @@ const PurchaseOrderDetail = () => {
 
         <h2 className="text-lg font-semibold text-gray-800">Purchase Items</h2>
         <PurchaseItemsTable purchaseItems={purchaseOrder.items??[]}/>
+
+
+        {/* Receieve Dialog */}
+        <ReceivePurchaseDialog
+            open= {isReceiveDialogOpen}
+            loading= {receiveLoading}
+            poNumber= {poNumber!}
+            purchaseItems= {purchaseOrder.items ?? []}
+            onClose= {closeReceiveDialog}
+            onSubmit= {handleReceivePurchase}
+        />
     </motion.div>
   )
 }
