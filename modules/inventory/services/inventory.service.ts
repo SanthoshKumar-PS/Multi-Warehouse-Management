@@ -1,6 +1,6 @@
 import { InventoryTxnType } from "@prisma/client";
 import { getInventoryTransactionsRepo, getInventoryWithTransactionsRepo, postInventoryTransactionRepo } from "../repository/inventory.repository";
-import { GetInventoryProductType, GetInventoryProductWithTransactionsType, GetInventoryTransactionsType, PostInventoryTransactionType, WarehouseIdType } from "../validation/inventory.validation"
+import { GetInventoryProductType, GetInventoryProductWithTransactionsType, GetInventoryTransactionsType, GetProductAvailabilityType, PostInventoryTransactionType, WarehouseIdType } from "../validation/inventory.validation"
 import prisma from "../../../utils/prisma";
 
 export const getInventoryStockService = async ({warehouseId}:WarehouseIdType) => {
@@ -40,6 +40,23 @@ export const getInventoryProductService = async ({warehouseId,productMn}:GetInve
     return { inventoryProduct, message: 'WarehouseInventory fetched successfully.' }
 }
 
+export const getProductAvailabilityService = async ( { productMn } : GetProductAvailabilityType) => {
+  const stockAvailable = await prisma.warehouseInventory.findMany({
+    where: {
+      productMn,
+    },
+    include: {
+      warehouse: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return stockAvailable
+}
+
 
 export const getInventoryProductWithTransactionsService = async ({warehouseId, productMn, page, limit} : GetInventoryProductWithTransactionsType) => {
     
@@ -65,10 +82,10 @@ export type PostInventoryTransactionServiceType = PostInventoryTransactionType &
     createdBy: string | null
 }
 
-export const postInventoryTransactionService = async ({productMn,warehouseId,type,qty,adjSign,reference, createdBy}:PostInventoryTransactionServiceType) => {
+export const postInventoryTransactionService = async ({productMn,warehouseId,warehouseName,type,qty,adjSign,reference, createdBy}:PostInventoryTransactionServiceType) => {
 
     const response = await postInventoryTransactionRepo({
-        productMn,warehouseId,type,qty,adjSign,reference, createdBy
+        productMn,warehouseId,warehouseName,type,qty,adjSign,reference, createdBy
     })
 
     return {
