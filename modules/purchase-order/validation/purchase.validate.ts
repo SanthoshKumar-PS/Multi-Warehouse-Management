@@ -1,18 +1,23 @@
-
-// req.body:  {
-//   poOrderItems: [
-//     {
-//       productMn: 'ASM-M10-144-530',
-//       productDescription: 'ADANI Monofacial 530Wp Topcon DCR Module | 12 Years Warranty',
-//       orderedQty: 1
-//     }
-//   ],
-//   supplierId: 1,
-//   expectedDate: '2026-04-19T18:30:00.000Z',
-//   orderNotes: ''
-// }
-// req.query:  { selectedWarehouseId: '1', selectedWarehouseName: 'FestaHouse' }
+import { PurchaseStatusType } from '@prisma/client';
 import { z } from 'zod';
+
+export const GetPurchaseOrdersSchema = z.object({
+    query: z.object({
+        selectedWarehouseId: z.coerce.number().positive(), 
+        debouncedSearch: z.string().trim().optional(), 
+        statusFilter: z.enum([...Object.values(PurchaseStatusType), 'ALL'] as const, "Status must be of type purchase or all."), 
+        page: z.coerce.number().int().positive('Page number must be positive.').default(1),
+        limit: z.coerce.number().int().positive('Limit must be positive').default(10)
+    })
+}).transform(({query}) => ({
+    warehouseId: query.selectedWarehouseId,
+    search: query.debouncedSearch, 
+    statusFilter: query.statusFilter, 
+    page: query.page,
+    limit: query.limit
+}))
+export type GetPurchaseOrdersType = z.infer<typeof GetPurchaseOrdersSchema>;
+
 
 export const PurchaseOrderItemSchema = z.object({
     productMn: z.string().trim().min(2, "Product MN must have at least 2 characters"),
@@ -30,7 +35,7 @@ export const NewPurchaseSchema = z.object({
     }),
     query: z.object({
         selectedWarehouseId: z.coerce.number().positive(),
-        selectedWarehouseName: z.string()
+        selectedWarehouseName: z.string().trim()
     })
 }).transform(({body, query}) => ({
     poOrderItems: body.poOrderItems,
@@ -41,6 +46,34 @@ export const NewPurchaseSchema = z.object({
     warehouseName: query.selectedWarehouseName
 }))
 export type NewPurchaseType = z.infer<typeof NewPurchaseSchema>;
+
+
+export const ReceiveItemSchema = z.object({
+    id: z.coerce.number().positive(),
+    purchaseOrderId: z.coerce.number().positive(),
+    productMn: z.string().trim().min(2, "Product MN must have at least 2 characters"),
+    orderedQty: z.coerce.number().min(1),
+    receivedQty: z.coerce.number().min(0),
+    receiveNowQty: z.coerce.number().min(0)
+})
+export type ReceiveItemType = z.infer<typeof ReceiveItemSchema>;
+
+export const ReceiveTransferItemsSchema = z.object({
+    body: z.object({
+        poNumber: z.string().trim().min(1),
+        receivePurchaseItems: z.array(ReceiveItemSchema).min(1, "At least one receive item is required.")
+    }),
+    query: z.object({
+        selectedWarehouseId: z.coerce.number().positive(),
+        selectedWarehouseName: z.string().trim()
+    })
+}).transform(({body, query}) => ({
+    warehouseId: query.selectedWarehouseId,
+    warehouseName: query.selectedWarehouseName,
+    poNumber: body.poNumber,
+    receivePurchaseItems: body.receivePurchaseItems
+}))
+export type ReceiveTransferItemsType = z.infer<typeof ReceiveTransferItemsSchema>;
 
 
 export const GetPurchaseOrderByNumberSchema = z.object({

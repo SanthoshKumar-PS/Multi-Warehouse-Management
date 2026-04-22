@@ -150,6 +150,168 @@ export const createNewPurchaseOrderService = async ({poOrderItems, supplierId,ex
 }
 
 
+type receivePurchaseOrderServiceType = ReceiveTransferItemsType & {
+    createdBy: string | null
+}
+export const receivePurchaseOrderService = async ({warehouseId, warehouseName, poNumber, receivePurchaseItems, createdBy} : receivePurchaseOrderServiceType) => {
+    const response = await prisma.$transaction(async (tx) => {
+        const purchaseOrder = await tx.purchaseOrder.findUnique({
+            where:{
+                poNumber
+            }
+        })
+        
+        if(!purchaseOrder || (purchaseOrder.status!=='CREATED' && purchaseOrder.status!=='PARTIALLY_RECEIVED')){
+            throw new ApiError(400,"Invalid purchase order status for receiving.")
+        }
+
+        const inventoryTransactionsData: Prisma.InventoryTransactionCreateManyInput[] = [];
+        const productMns = [...new Set(receivePurchaseItems.map((item) => item.productMn))];
+        const inventories = await tx.warehouseInventory.findMany({
+            where:{
+                warehouseId: warehouseId,
+                productMn: {
+                    in: productMns
+                }
+            }
+        });
+
+        const existingMns = new Set(inventories.map((inv) => inv.productMn));
+        const missingMns = productMns.filter((mn) => !existingMns.has(mn));
+        console.log("Missing products in warehouse: ", missingMns);
+
+        if(missingMns.length>0){
+            await tx.warehouseInventory.createMany({
+                data: missingMns.map((mn) => ({
+                    warehouseId:warehouseId,
+                    productMn: mn,
+                    physicalQty: 0,
+                    reservedQty: 0,
+                    minimumQty: 10,
+                })),
+                skipDuplicates: true
+            })
+        }
+
+        const updatedInventories = await tx.warehouseInventory.findMany({
+            where:{
+                warehouseId: warehouseId,
+                productMn: {
+                    in: productMns
+                }
+            }
+        })
+
+        if(updatedInventories.length !== productMns.length){
+            throw new ApiError(404, "Some products not found in warehouse inventory");
+        }
+
+        const inventoryMap = new Map(
+            updatedInventories.map((inv) => [inv.productMn,inv])
+        )
+
+        for (const item of receivePurchaseItems) {
+            if(item.orderedQty < item.receivedQty + item.receiveNowQty){
+                throw new ApiError(400, `Total received quantity cannot exceed ordered quantity for ${item.productMn}`);
+            }
+
+            if(item.receiveNowQty>0){
+                const receiveResult = await applyInventoryTxn(
+                    tx,
+                    inventoryMap,
+                    inventoryTransactionsData,
+                    {
+                        warehouseId: warehouseId,
+                        warehouseName: warehouseName,
+                        productMn: item.productMn,
+                        type: InventoryTxnType.INWARD,
+                        qty: item.receiveNowQty,
+                        reference: poNumber,
+                        createdBy: createdBy,
+                    },
+                )
+                const updatedPurchaseItem = await tx.purchaseOrderItem.updateMany({
+                    where:{
+                        purchaseOrderId: purchaseOrder.id,
+                        productMn: item.productMn,
+                        receivedQty:{
+                            lte: item.orderedQty - item.receiveNowQty
+                        }
+                    },
+                    data:{
+                        receivedQty:{
+                            increment: item.receiveNowQty
+                        }
+                    }
+                })
+
+                if(updatedPurchaseItem.count === 0){
+                    throw new ApiError(400, `Concurrent update or over-receiving detected for ${item.productMn}`)                
+                }
+            }
+        }
+
+        const createdInventoryTransaction = await tx.inventoryTransaction.createMany({
+            data: inventoryTransactionsData
+        });
+
+        console.log("createdInventoryTransaction: ",createdInventoryTransaction);
+
+        const updatedItems = await tx.purchaseOrderItem.findMany({
+            where:{
+                purchaseOrderId: purchaseOrder.id
+            }
+        })
+
+        const isFullyReceived = updatedItems.every(item => {
+            return item.orderedQty === item.receivedQty
+        })
+
+        const result = await tx.purchaseOrder.update({
+            where:{
+                poNumber,
+                status: {
+                    in: ['CREATED', 'PARTIALLY_RECEIVED']
+                }
+            },
+            data: {
+                status: isFullyReceived ? 'COMPLETED' : 'PARTIALLY_RECEIVED'
+            }
+        })
+
+        const updatedPurchaseOrder = await tx.purchaseOrder.findUnique({
+            where:{
+                poNumber
+            },
+            include:{
+                items: true
+            }
+        });
+
+        console.log("UpdatedPurchaseOrder: ", updatedPurchaseOrder);
+
+        return { purchaseOrder: updatedPurchaseOrder }
+    })
+
+    const inventoryTransactions = await prisma.inventoryTransaction.findMany({
+        where:{
+            reference: poNumber
+        },
+        orderBy:{
+            id: 'desc'
+        },
+        include:{
+            product:{
+                select:{
+                    description: true
+                }
+            }
+        }
+    })
+
+    return { purchaseOrder: response.purchaseOrder, inventoryTransactions }
+}
+
 export const getPurchaseOrderByNumberService = async ({ warehouseId, poNumber } : GetPurchaseOrderByNumberType) => {
     const purchaseOrder = await prisma.purchaseOrder.findUnique({
         where:{

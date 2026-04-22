@@ -2,8 +2,8 @@ import { AuthRequest } from "../../../utils/AuthRequest";
 import {Response} from 'express'
 import prisma from "../../../utils/prisma";
 import { validateRequest } from "../../../utils/validateRequest";
-import { GetPurchaseOrdersSchema, GetPurchaseOrderByNumberSchema, NewPurchaseSchema } from "../validation/purchase.validate"
-import { getPurchaseOrdersService, createNewPurchaseOrderService, getPurchaseOrderByNumberService } from "../service/purchase.service"
+import { GetPurchaseOrdersSchema, GetPurchaseOrderByNumberSchema, NewPurchaseSchema, ReceiveTransferItemsSchema } from "../validation/purchase.validate"
+import { getPurchaseOrdersService, createNewPurchaseOrderService, getPurchaseOrderByNumberService, receivePurchaseOrderService } from "../service/purchase.service"
 
 export const getPurchaseOrders = async (req: AuthRequest, res: Response) => {
     try {
@@ -46,6 +46,43 @@ export const createPurchaseOrder = async (req:AuthRequest, res:Response) => {
         })
 
         return res.status(200).json({message:"Purchase Order Created Successfully.", purchaseOrder: response.purchaseOrder})
+        
+    } catch (error:any) {
+        console.log('Error occured in createPurchaseOrder: ', error);
+        return res.status(error.statusCode || 500).json({ message: error.message || 'Internal Server Error.' });         
+    }
+
+}
+
+export const receivePurchaseOrder = async (req:AuthRequest, res:Response) => {
+    try {
+        const authUser = req.authUser;
+        const createdBy = authUser?.trigram ?? null;
+        console.log("Req body: ",req.body);
+        console.log("Req query: ",req.query);
+
+        const validated = validateRequest(ReceiveTransferItemsSchema,{
+            body: req.body,
+            query: req.query
+        })
+
+        const { warehouseId, warehouseName, poNumber, receivePurchaseItems }  = validated
+
+        const response = await receivePurchaseOrderService({
+            warehouseId,
+            warehouseName,
+            poNumber,
+            receivePurchaseItems,
+            createdBy
+        })
+
+        
+
+        return res.status(200).json({
+            purchaseOrder: response.purchaseOrder,
+            inventoryTransactions: response.inventoryTransactions,
+            message:"Purchase Order Created Successfully."
+        })
         
     } catch (error:any) {
         console.log('Error occured in createPurchaseOrder: ', error);
