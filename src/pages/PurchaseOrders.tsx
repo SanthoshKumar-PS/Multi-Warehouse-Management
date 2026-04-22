@@ -1,3 +1,4 @@
+import { handleApiError } from "@/components/handleApiError";
 import Pagination from "@/components/Pagination/Pagination";
 import { usePagination } from "@/components/Pagination/usePagination";
 import PurchaseTable from "@/components/Purchase/PurchaseTable";
@@ -7,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthProvider"
 import { useDebounce } from "@/hooks/useDebounce";
+import { api } from "@/lib/api";
 import { PURCHASE_STATUS_TYPES, type PurchaseOrder, type PurchaseStatusType } from "@/types/TableTypes";
 import { motion } from "framer-motion";
 import { ArrowLeftRight, Plus, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const PurchaseOrders = () => {
@@ -28,6 +30,38 @@ const PurchaseOrders = () => {
     const [statusFilter, setStatusFilter] = useState<PurchaseStatusType | 'ALL'>('ALL');
 
     const { page, setPage, totalPages, setTotalPages, limit, setLimit } = usePagination();
+
+    const fetchPurchaseOrders = async (signal?:AbortSignal) => {
+        try {
+            setIsLoading(true);
+            const response = await api.get('/purchase-orders',{
+                params:{
+                    debouncedSearch, statusFilter, page, limit
+                },
+                signal: signal
+            })
+            console.log("Purchase orders response: ",response.data);
+            setPurchaseOrders(response.data.purchaseOrders);
+            setTotalPages(response.data.totalPages);
+        } catch (error:any) {
+            if(error.name==='CanceledError' || error.name==='AbortError') return;
+            console.log("Error occured in fetchPurchaseOrders: ",error);
+            handleApiError(error);            
+        } finally{
+            if(!signal?.aborted){
+                setIsLoading(false);
+            }
+        }
+    }
+
+    useEffect(()=> {
+        const controller = new AbortController();
+        fetchPurchaseOrders(controller.signal);
+
+        return () => {
+            controller.abort();
+        }
+    },[selectedWarehouse?.warehouseId, debouncedSearch, statusFilter, page, limit])
   return (
     <motion.div
         initial={{opacity:0, y:10 }}

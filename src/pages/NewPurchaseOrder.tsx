@@ -136,7 +136,7 @@ const NewPurchaseOrder = () => {
             <div className="grid gap-2">
                 <Label>Supplier</Label>
                 <SupplierSelector
-                    suppliers={suppliersList}
+                    suppliers={suppliersList??[]}
                     selectedSupplierId={supplierId}
                     onSelect={setSupplierId}
                     onAddSupplier={handleAddNewSupplier}
@@ -224,7 +224,7 @@ const NewPurchaseOrder = () => {
         <PurchaseProductDialog
             open = {isPurchaseProductDialogOpen}
             onClose= {closePurchaseProductDialog} 
-            purchaseProducts= {productsList}
+            purchaseProducts= {productsList??[]}
             isLoading= {isPurchaseProductLoading}
             onProductClick= {handleSelectProduct}
             reFetchProducts = {fetchProductsList}

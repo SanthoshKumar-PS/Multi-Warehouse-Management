@@ -46,7 +46,7 @@ const PurchaseTable = ({ purchaseOrders }: PurchaseTableProps) => {
                 <TableRow
                   key={po.id}
                   className="[&_td]:py-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
-                  onClick={() => navigate(`/purchases/${po.poNumber}`)}
+                  onClick={() => navigate(`/purchase-orders/${po.poNumber}`)}
                 >
                   <TableCell className="whitespace-nowrap text-sm text-gray-600">
                     {formatUtcToIST(po.createdAt)}

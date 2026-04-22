@@ -63,7 +63,7 @@ const Transfers = () => {
       return () => {
         controller.abort();
       }
-    },[selectedWarehouse.warehouseId, page, limit, debouncedSearch, statusFilter, directionFilter])
+    },[selectedWarehouse?.warehouseId, page, limit, debouncedSearch, statusFilter, directionFilter])
 
     
 
