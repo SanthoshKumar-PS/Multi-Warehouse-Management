@@ -3,3 +3,5 @@ node_modules
 .env
 api.rest
 dist/
+prisma/dump/
+prisma/seedsFile/
