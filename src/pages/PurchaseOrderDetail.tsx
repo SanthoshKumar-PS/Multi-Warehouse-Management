@@ -4,7 +4,7 @@ import { Spinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthProvider';
 import { api } from '@/lib/api';
-import type { PurchaseOrder } from '@/types/TableTypes';
+import type { InventoryTransaction, PurchaseOrder } from '@/types/TableTypes';
 import { ArrowLeft, ArrowLeftRight, PackageCheck, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -17,12 +17,14 @@ import { getWarehouseEmoji } from "@/utils/getWarehouseEmoji";
 import PurchaseItemsTable from "@/components/Purchase/PurchaseItemsTable";
 import { useReceivePurchase, type ReceivePurchaseItemType } from "@/components/Dialog/ReceivePurchaseDialog/useReceivePurchase";
 import ReceivePurchaseDialog from "@/components/Dialog/ReceivePurchaseDialog/ReceivePurchaseDialog";
+import TransactionsTable from "@/components/Transactions/TransactionsTable";
 const PurchaseOrderDetail = () => {
     const { poNumber } = useParams();
     const navigate = useNavigate();
     const { selectedWarehouse } = useAuth();
 
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrder | null>(null);
+    const [inventoryTransactions, setInventoryTransactions] = useState<InventoryTransaction[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const totalOrdered = purchaseOrder?.items?.reduce((s,i) => s+i.orderedQty,0) ?? 0;
@@ -34,7 +36,11 @@ const PurchaseOrderDetail = () => {
     const handleReceivePurchase = async (poNumber:string, receivePurchaseItems: ReceivePurchaseItemType[]) => {
         const result = await submitReceivePurchase(poNumber, receivePurchaseItems)
         if(!result) return;
-        console.log("Result after receiving purchase order: ", result);
+        const { purchaseOrder, inventoryTransactions } = result
+        setPurchaseOrder(purchaseOrder);
+        setInventoryTransactions(inventoryTransactions);
+        toast.success('Purchase order receieved successfully.');
+        closeReceiveDialog();
     }
 
     const fetchPurchaseOrder = async () => {
@@ -46,6 +52,7 @@ const PurchaseOrderDetail = () => {
             }
             const response = await api.get(`/purchase-orders/poNumber/${poNumber}`)
             setPurchaseOrder(response.data.purchaseOrder)
+            setInventoryTransactions(response.data.inventoryTransactions);
             console.log("fetchPurchaseOrder Response: ", response.data);
         } catch(error:any){
             console.log("Error occured in fetchPurchaseOrder: ", error);
@@ -198,9 +205,13 @@ const PurchaseOrderDetail = () => {
             </div>
         )}
 
+        {/* Items Table */}
         <h2 className="text-lg font-semibold text-gray-800">Purchase Items</h2>
         <PurchaseItemsTable purchaseItems={purchaseOrder.items??[]}/>
 
+        {/* Inventory Transaction */}
+        <h2 className="text-lg font-semibold text-gray-800">Transactions</h2>
+        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true} showWarehouse={true}/>
 
         {/* Receieve Dialog */}
         <ReceivePurchaseDialog

@@ -25,6 +25,10 @@ export const useReceivePurchase = () => {
                 receivePurchaseItems
             })
             console.log("Response from submitReceivePurchase: ",response.data);
+            return {
+                purchaseOrder: response.data.purchaseOrder,
+                inventoryTransactions : response.data.inventoryTransactions
+            }
         } catch (error:any) {
             console.log("Error occured in submitReceivePurchase: ", error);
             handleApiError(error);
