@@ -17,12 +17,12 @@ export const useReceivePurchase = () => {
         setOpen(false);
     }
 
-    const submitReceivePurchase = async (poNumber:string, receievePurchaseItems: ReceivePurchaseItemType[]) => {
+    const submitReceivePurchase = async (poNumber:string, receivePurchaseItems: ReceivePurchaseItemType[]) => {
         try {
             setIsLoading(true);
             const response = await api.patch(`/purchase-orders/receive/${poNumber}`,{
                 poNumber,
-                receievePurchaseItems
+                receivePurchaseItems
             })
             console.log("Response from submitReceivePurchase: ",response.data);
         } catch (error:any) {

@@ -57,7 +57,7 @@ const ReceivePurchaseDialog = ({open, loading, poNumber, purchaseItems, onClose,
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent>
+        <DialogContent className="min-w-3xl">
             <DialogHeader>
                 <DialogTitle>Receive Purchase - {poNumber}</DialogTitle>
                 <DialogDescription>Enter the quantity received for each product. Cannot exceed the remaining quantity.</DialogDescription>

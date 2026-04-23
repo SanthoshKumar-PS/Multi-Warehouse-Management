@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthProvider';
 import { api } from '@/lib/api';
 import type { PurchaseOrder } from '@/types/TableTypes';
-import { ArrowLeft, ArrowLeftRight } from 'lucide-react';
+import { ArrowLeft, ArrowLeftRight, PackageCheck, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner';
@@ -31,8 +31,8 @@ const PurchaseOrderDetail = () => {
 
     const { open: isReceiveDialogOpen, isLoading: receiveLoading, openDialog: openReceiveDialog, closeDialog: closeReceiveDialog, submitReceivePurchase } = useReceivePurchase();
 
-    const handleReceivePurchase = async (poNumber:string, receievePurchaseItems: ReceivePurchaseItemType[]) => {
-        const result = await submitReceivePurchase(poNumber, receievePurchaseItems)
+    const handleReceivePurchase = async (poNumber:string, receivePurchaseItems: ReceivePurchaseItemType[]) => {
+        const result = await submitReceivePurchase(poNumber, receivePurchaseItems)
         if(!result) return;
         console.log("Result after receiving purchase order: ", result);
     }
@@ -58,6 +58,11 @@ const PurchaseOrderDetail = () => {
     useEffect(()=> {
         fetchPurchaseOrder();
     },[])
+
+    const isFullyReceived = purchaseOrder?.status === 'COMPLETED';
+    const isCancelled = purchaseOrder?.status === 'CANCELLED';
+    const canReceive = !isFullyReceived && !isCancelled;
+    const canCancel = purchaseOrder?.status === 'CREATED';
 
     if(isLoading){
         return (
@@ -108,11 +113,24 @@ const PurchaseOrderDetail = () => {
             {/* TODO */}
             {/* Active Buttons */}
             <div className='flex items-center gap-2'>
-                <Button
-                    onClick={() => {
-                        openReceiveDialog();
-                    }}
-                >Action Buttons</Button>
+                {canCancel && (
+                    <Button variant='destructive'
+                        onClick={() => {
+                            // TODO: Cancel dialog must be created
+                            console.log("Cancel dialog must be created");
+                        }}
+                        
+                    ><XCircle className="mr-1 h-4 w-4" />Cancel</Button>
+                )}
+                {canReceive && (
+                    <Button
+                        onClick={() => {
+                            openReceiveDialog();
+                        }}
+                    >
+                        <PackageCheck className="mr-1 h-4 w-4" />Receive Items
+                    </Button>
+                )}
             </div>
         </div>
 
