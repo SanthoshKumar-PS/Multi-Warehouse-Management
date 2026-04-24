@@ -1,5 +1,4 @@
-import { TransferItem, TransferStatus, WarehouseAccessType } from '@prisma/client';
-import { transcode } from 'buffer';
+import { TransferStatus, WarehouseAccessType } from '@prisma/client';
 import { z } from 'zod';
 
 export const SelectedProductSchema = z.object({
