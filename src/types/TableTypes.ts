@@ -38,6 +38,7 @@ export const PURCHASE_STATUS_TYPES = [
   { type: "CANCELLED", label: "Cancelled" },
   { type: "PARTIALLY_RECEIVED", label: "Partially Received" },
   { type: "COMPLETED", label: "Completed" },
+  { type: "CLOSED", label: "Closed" },
 ] as const;
 
 export type PurchaseStatusType = typeof PURCHASE_STATUS_TYPES[number]['type']

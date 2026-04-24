@@ -23,7 +23,7 @@ const PurchaseItemsTable = ({purchaseItems}:PurchaseItemsTableProps) => {
             {purchaseItems.length === 0 ? (
                 <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center text-gray-500">
-                        No transfers found.
+                        No purchase items found.
                     </TableCell>
                 </TableRow>
             ) : (
