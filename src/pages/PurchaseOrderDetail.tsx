@@ -18,6 +18,8 @@ import PurchaseItemsTable from "@/components/Purchase/PurchaseItemsTable";
 import { useReceivePurchase, type ReceivePurchaseItemType } from "@/components/Dialog/ReceivePurchaseDialog/useReceivePurchase";
 import ReceivePurchaseDialog from "@/components/Dialog/ReceivePurchaseDialog/ReceivePurchaseDialog";
 import TransactionsTable from "@/components/Transactions/TransactionsTable";
+import { useCancelPurchase } from "@/components/Dialog/CancelPurchaseDialog/useCancelPurchase";
+import CancelPurchaseDialog from "@/components/Dialog/CancelPurchaseDialog/CancelPurchaseDialog";
 const PurchaseOrderDetail = () => {
     const { poNumber } = useParams();
     const navigate = useNavigate();
@@ -32,6 +34,7 @@ const PurchaseOrderDetail = () => {
     const totalRemaining = totalOrdered - totalReceived;
 
     const { open: isReceiveDialogOpen, isLoading: receiveLoading, openDialog: openReceiveDialog, closeDialog: closeReceiveDialog, submitReceivePurchase } = useReceivePurchase();
+    const { open: isCancelDialogOpen, isLoading: cancelLoading, openDialog: openCancelDialog, closeDialog: closeCancelDialog, submitCancelPurchase } = useCancelPurchase();
 
     const handleReceivePurchase = async (poNumber:string, receivePurchaseItems: ReceivePurchaseItemType[]) => {
         const result = await submitReceivePurchase(poNumber, receivePurchaseItems)
@@ -39,8 +42,17 @@ const PurchaseOrderDetail = () => {
         const { purchaseOrder, inventoryTransactions } = result
         setPurchaseOrder(purchaseOrder);
         setInventoryTransactions(inventoryTransactions);
-        toast.success('Purchase order receieved successfully.');
+        toast.success('Purchase order received successfully.');
         closeReceiveDialog();
+    }
+
+    const handleCancelPurchase = async (poNumber:string) => {
+        const result = await submitCancelPurchase(poNumber)
+        if(!result) return;
+        const { purchaseOrder } = result
+        setPurchaseOrder(purchaseOrder);
+        toast.success('Purchase order cancelled successfully.');
+        closeCancelDialog();
     }
 
     const fetchPurchaseOrder = async () => {
@@ -123,8 +135,8 @@ const PurchaseOrderDetail = () => {
                 {canCancel && (
                     <Button variant='destructive'
                         onClick={() => {
-                            // TODO: Cancel dialog must be created
-                            console.log("Cancel dialog must be created");
+                            openCancelDialog()
+                            console.log("Cancel dialog clicked.");
                         }}
                         
                     ><XCircle className="mr-1 h-4 w-4" />Cancel</Button>
@@ -221,6 +233,15 @@ const PurchaseOrderDetail = () => {
             purchaseItems= {purchaseOrder.items ?? []}
             onClose= {closeReceiveDialog}
             onSubmit= {handleReceivePurchase}
+        />
+
+        {/* Cancel Dialog */}
+        <CancelPurchaseDialog
+            poNumber={poNumber!}
+            open= {isCancelDialogOpen}
+            loading= {cancelLoading}
+            onClose= {closeCancelDialog}
+            onSubmit= {handleCancelPurchase}
         />
     </motion.div>
   )
