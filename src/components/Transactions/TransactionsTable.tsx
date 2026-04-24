@@ -34,7 +34,10 @@ const TransactionsTable = ({ inventoryTransactions = [], showProduct = false, sh
                 <TableBody>
                     {inventoryTransactions.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={showProduct ? 8 : 7} className="h-24 text-center text-gray-500">
+                            <TableCell
+                                colSpan={7 + (showProduct ? 1 : 0) + (showWarehouse ? 1 : 0)} 
+                                className="h-24 text-center text-gray-500"
+                            >
                                 No transactions found.
                             </TableCell>
                         </TableRow>
