@@ -247,7 +247,7 @@ const PurchaseOrderDetail = () => {
 
         {/* Inventory Transaction */}
         <h2 className="text-lg font-semibold text-gray-800">Transactions</h2>
-        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true} showWarehouse={true}/>
+        <TransactionsTable inventoryTransactions={inventoryTransactions} showProduct={true}/>
 
         {/* Receieve Dialog */}
         <ReceivePurchaseDialog

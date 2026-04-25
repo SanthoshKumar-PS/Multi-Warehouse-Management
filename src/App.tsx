@@ -14,6 +14,8 @@ import TransferDetails from "./pages/TransferDetails";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import NewPurchaseOrder from "./pages/NewPurchaseOrder";
 import PurchaseOrderDetail from "./pages/PurchaseOrderDetail";
+import SupplierDetail from "./pages/SupplierDetail";
+import SuppliersList from "./pages/SuppliersList";
 
 const App = () => {
   return (
@@ -32,6 +34,10 @@ const App = () => {
             <Route path="/purchase-orders" element={<PurchaseOrders />} />
             <Route path="/purchase-orders/:poNumber" element={<PurchaseOrderDetail />} />
             <Route path="/purchase-orders/new" element={<NewPurchaseOrder />} />
+            <Route path="/suppliers">
+              <Route index element={<SuppliersList/>}/>
+              <Route path=":supplierId" element={<SupplierDetail/>}/>
+            </Route>
             <Route path="/transfers/new" element={<NewTransfer />} />
             <Route path="/low-stock" element={<LowStock />} />
           </Route>
