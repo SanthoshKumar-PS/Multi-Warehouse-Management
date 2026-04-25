@@ -66,7 +66,7 @@ const PurchaseOrderDetail = () => {
         setPurchaseOrder(purchaseOrder);
         setInventoryTransactions(inventoryTransactions);
         toast.success('Purchase order closed successfully.');
-        closeCancelDialog();
+        closeCloseDialog();
     }
 
     const fetchPurchaseOrder = async () => {
