@@ -292,13 +292,23 @@ export const receivePurchaseOrderService = async ({warehouseId, warehouseName, p
                 poNumber
             },
             include:{
-                items: true
+                items: {
+                    include: {
+                        product:{
+                            select:{
+                                description:true
+                            }
+                        }
+                    }
+                }
             }
         });
 
         console.log("UpdatedPurchaseOrder: ", updatedPurchaseOrder);
 
         return { purchaseOrder: updatedPurchaseOrder }
+    },{
+        timeout:10000
     })
 
     const inventoryTransactions = await prisma.inventoryTransaction.findMany({
@@ -392,7 +402,18 @@ export const closePurchaseOrderService = async ({ warehouseId, warehouseName, po
         
         const updatedPurchaseOrder = await tx.purchaseOrder.findUnique({
             where: { poNumber },
-            include: { items: true },
+            include: { 
+                items: {
+                    include: {
+                        product:{
+                            select:{
+                                description:true
+                            }
+                        }
+                    }
+                }
+
+            },
         });
 
         if (!updatedPurchaseOrder) {
